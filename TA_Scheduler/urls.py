@@ -14,9 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from scheduler.views import Create
+
 from django.contrib import admin
 from django.urls import path
+from scheduler.views import Create
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),  # Admin interface
+    path('scheduler/', Create.as_view(), name='Create'),  # Scheduler view
+    path('', Create.as_view(), name='home'),  # Root URL as the homepage
 ]
