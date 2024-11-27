@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            width: 300px;
+            text-align: left;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .card h2 {
+            margin-bottom: 10px;
+        }
+        .card ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .card ul li {
+            margin: 8px 0;
+        }
+        .edit-section {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            text-align: right;
+        }
+        .edit-section ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .edit-section ul li {
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .add-form {
+            display: none;
+            margin-top: 10px;
+        }
+        .add-form input {
+            display: block;
+            margin: 5px 0;
+            width: calc(100% - 12px);
+            padding: 5px;
+        }
+    </style>
+    <script>
+        function toggleAddForm(role) {
+            const form = document.getElementById(`${role}-add-form`);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+    </script>
+</head>
+<body>
+    <h1>User Management</h1>
+
+    <div class="container">
+        <!-- Instructors Card -->
+        <div class="card">
+            <h2>Instructors:</h2>
+            <ul>
+                <li>Name</li>
+                <li>Course</li>
+                <li>Lab Section</li>
+            </ul>
+            <div class="edit-section">
+                <ul>
+                    <li onclick="toggleAddForm('Instructor')">Add</li>
+                    <li>Delete</li>
+                    <li>Modify</li>
+                </ul>
+            </div>
+            <form id="Instructor-add-form" class="add-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="role" value="Instructor">
+                <input type="text" name="username" placeholder="Name" required>
+                <input type="text" name="course" placeholder="Course">
+                <input type="text" name="lab_section" placeholder="Lab Section">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="phone_number" placeholder="Phone Number">
+                <button type="submit">Add Instructor</button>
+            </form>
+        </div>
+
+        <!-- Supervisors Card -->
+        <div class="card">
+            <h2>Supervisors:</h2>
+            <ul>
+                <li>Name</li>
+            </ul>
+            <div class="edit-section">
+                <ul>
+                    <li onclick="toggleAddForm('Supervisor')">Add</li>
+                    <li>Delete</li>
+                    <li>Modify</li>
+                </ul>
+            </div>
+            <form id="Supervisor-add-form" class="add-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="role" value="Supervisor">
+                <input type="text" name="username" placeholder="Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="phone_number" placeholder="Phone Number">
+                <button type="submit">Add Supervisor</button>
+            </form>
+        </div>
+
+        <!-- TAs Card -->
+        <div class="card">
+            <h2>TAs:</h2>
+            <ul>
+                <li>Name</li>
+                <li>Lab Section</li>
+                <li>Course Section</li>
+            </ul>
+            <div class="edit-section">
+                <ul>
+                    <li onclick="toggleAddForm('TA')">Add</li>
+                    <li>Delete</li>
+                    <li>Modify</li>
+                </ul>
+            </div>
+            <form id="TA-add-form" class="add-form" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add">
+                <input type="hidden" name="role" value="TA">
+                <input type="text" name="username" placeholder="Name" required>
+                <input type="text" name="lab_section" placeholder="Lab Section">
+                <input type="text" name="course_section" placeholder="Course Section">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="text" name="phone_number" placeholder="Phone Number">
+                <button type="submit">Add TA</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
