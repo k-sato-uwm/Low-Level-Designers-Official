@@ -61,6 +61,18 @@
             width: calc(100% - 12px);
             padding: 5px;
         }
+        .success-display{
+            display: inline-block;
+            margin:5px auto;
+            width: auto;
+            max-width: 300px;
+            padding: 5px;
+            border-radius: 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+
     </style>
     <script>
         function toggleAddForm(role) {
@@ -92,14 +104,20 @@
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add">
                 <input type="hidden" name="role" value="Instructor">
-                <input type="text" name="username" placeholder="Name" required>
-                <input type="text" name="course" placeholder="Course">
-                <input type="text" name="lab_section" placeholder="Lab Section">
+                <input type="text" name="username" placeholder="username" required>
+                <input type="text" name="password" placeholder="password" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="text" name="phone_number" placeholder="Phone Number">
+                <input type="text" name="phone_number" placeholder="Phone Number" required>
+                <input type="text" name="Address"placeholder="address" required>
                 <button type="submit">Add Instructor</button>
             </form>
+             {% if success %} <!-- displays success message-->
+            <div class = success-display>
+             <p>{{ success }}</p>
+            </div>
+        {% endif %}
         </div>
+
 
         <!-- Supervisors Card -->
         <div class="card">
