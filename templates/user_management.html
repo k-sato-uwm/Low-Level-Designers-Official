@@ -16,7 +16,7 @@
             margin-top: 20px;
         }
         .card {
-            border: 1px solid #ccc;
+            border: 1px solid lightgrey;
             border-radius: 8px;
             padding: 16px;
             width: 300px;
@@ -51,42 +51,36 @@
             cursor: pointer;
             text-decoration: underline;
         }
-        .add-form {
+        .form-container {
             display: none;
             margin-top: 10px;
         }
-        .add-form input {
+        .form-container input {
             display: block;
             margin: 5px 0;
             width: calc(100% - 12px);
             padding: 5px;
         }
-        .success-display, .error-display{
-            display: inline-block;
-            margin:5px auto;
-            width: auto;
-            max-width: 300px;
-            padding: 5px;
-            border-radius: 8px;
-            font-size: 14px;
-            text-align: center;
-        }
-        .success-display{
+        .success-display {
             background-color: lightgreen;
             color: darkgreen;
             border: 1px solid green;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
         }
-        .error-display{
-             background-color: lightpink;
+        .error-display {
+            background-color: lightpink;
             color: darkred;
-            border: 1px solid pink;
+            border: 1px solid red;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
         }
-
-
     </style>
     <script>
-        function toggleAddForm(role) {
-            const form = document.getElementById(`${role}-add-form`);
+        function toggleForm(formId) {
+            const form = document.getElementById(formId);
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
     </script>
@@ -105,36 +99,56 @@
             </ul>
             <div class="edit-section">
                 <ul>
-                    <li onclick="toggleAddForm('Instructor')">Add</li>
-                    <li>Delete</li>
-                    <li>Modify</li>
+                    <li onclick="toggleForm('Instructor-add-form')">Add</li>
+                    <li onclick="toggleForm('Instructor-delete-form')">Delete</li>
+                    <li onclick="toggleForm('Instructor-edit-form')">Modify</li>
                 </ul>
             </div>
-            <form id="Instructor-add-form" class="add-form" method="POST">
+            {% if success and role == 'Instructor' %}
+            <div class="success-display">
+                <p>{{ success }}</p>
+            </div>
+            {% endif %}
+            {% if error and role == 'Instructor' %}
+            <div class="error-display">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Add Form -->
+            <form id="Instructor-add-form" class="form-container" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add">
                 <input type="hidden" name="role" value="Instructor">
-                <input type="text" name="username" placeholder="username" required>
-                <input type="text" name="password" placeholder="password" required>
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="text" name="password" placeholder="Password" required>
                 <input type="email" name="email" placeholder="Email" required>
                 <input type="text" name="phone_number" placeholder="Phone Number" required>
-                <input type="text" name="Address"placeholder="address" required>
+                <input type="text" name="address" placeholder="Address" required>
                 <button type="submit">Add Instructor</button>
             </form>
-             {% if success %} <!-- displays success message-->
-            <div class = success-display>
-             <p>{{ success }}</p>
-            </div>
-        {% endif %}
-
-         {% if error %} <!-- displays success message-->
-            <div class = error-display>
-             <p>{{ error }}</p>
-            </div>
-        {% endif %}
+            <!-- Delete Form -->
+            <form id="Instructor-delete-form" class="form-container" method="POST">
+                {% csrf_token %}
+                <input type="text" name="id" placeholder="User ID" required>
+                <button type="submit">Delete Instructor</button>
+            </form>
+            <!-- Edit Form -->
+            <form id="Instructor-edit-form" class="form-container" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="role" value="Instructor">
+                <input type="text" name="id" placeholder="User ID" required>
+                <input type="text" name="username" placeholder="new username">
+                <input type="text" name="password" placeholder="new password">
+                <input type="email" name="email" placeholder="new email">
+                <input type="text" name="phone_number" placeholder="new phone number">
+                <input type="text" name="address" placeholder="new address">
+                <button type="submit">Modify Instructor</button>
+            </form>
         </div>
 
-
+        <!-- Repeat for Supervisors and TAs -->
         <!-- Supervisors Card -->
         <div class="card">
             <h2>Supervisors:</h2>
@@ -143,31 +157,53 @@
             </ul>
             <div class="edit-section">
                 <ul>
-                    <li onclick="toggleAddForm('Supervisor')">Add</li>
-                    <li>Delete</li>
-                    <li>Modify</li>
+                    <li onclick="toggleForm('Supervisor-add-form')">Add</li>
+                    <li onclick="toggleForm('Supervisor-delete-form')">Delete</li>
+                    <li onclick="toggleForm('Supervisor-edit-form')">Modify</li>
                 </ul>
             </div>
-            <form id="Supervisor-add-form" class="add-form" method="POST">
+            {% if success and role == 'Supervisor' %}
+            <div class="success-display">
+                <p>{{ success }}</p>
+            </div>
+            {% endif %}
+            {% if error and role == 'Supervisor' %}
+            <div class="error-display">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Add Form -->
+            <form id="Supervisor-add-form" class="form-container" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add">
                 <input type="hidden" name="role" value="Supervisor">
-                <input type="text" name="username" placeholder="Name" required>
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="text" name="password" placeholder="Password" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="text" name="phone_number" placeholder="Phone Number">
+                <input type="text" name="phone_number" placeholder="Phone Number" required>
+                <input type="text" name="address" placeholder="Address" required>
                 <button type="submit">Add Supervisor</button>
             </form>
-             {% if success %} <!-- displays success message-->
-            <div class = success-display>
-             <p>{{ success }}</p>
-            </div>
-        {% endif %}
-
-         {% if error %} <!-- displays success message-->
-            <div class = error-display>
-             <p>{{ error }}</p>
-            </div>
-        {% endif %}
+            <!-- Delete Form -->
+            <form id="Supervisor-delete-form" class="form-container" method="POST">
+                {% csrf_token %}
+                <input type="text" name="id" placeholder="User ID" required>
+                <button type="submit">Delete Supervisor</button>
+            </form>
+            <!-- Edit Form -->
+            <form id="Supervisor-edit-form" class="form-container" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="role" value="Supervisor">
+                <input type="text" name="id" placeholder="User ID" required>
+                <input type="text" name="username" placeholder="new username">
+                <input type="text" name="password" placeholder="new password">
+                <input type="email" name="email" placeholder="new email">
+                <input type="text" name="phone_number" placeholder="new phone number">
+                <input type="text" name="address" placeholder="new address">
+                <button type="submit">Modify Supervisor</button>
+            </form>
         </div>
 
         <!-- TAs Card -->
@@ -180,33 +216,53 @@
             </ul>
             <div class="edit-section">
                 <ul>
-                    <li onclick="toggleAddForm('TA')">Add</li>
-                    <li>Delete</li>
-                    <li>Modify</li>
+                    <li onclick="toggleForm('TA-add-form')">Add</li>
+                    <li onclick="toggleForm('TA-delete-form')">Delete</li>
+                    <li onclick="toggleForm('TA-edit-form')">Modify</li>
                 </ul>
             </div>
-            <form id="TA-add-form" class="add-form" method="POST">
+            {% if success and role == 'TA' %}
+            <div class="success-display">
+                <p>{{ success }}</p>
+            </div>
+            {% endif %}
+            {% if error and role == 'TA' %}
+            <div class="error-display">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Add Form -->
+            <form id="TA-add-form" class="form-container" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="add">
                 <input type="hidden" name="role" value="TA">
-                <input type="text" name="username" placeholder="Name" required>
-                <input type="text" name="lab_section" placeholder="Lab Section">
-                <input type="text" name="course_section" placeholder="Course Section">
+                <input type="text" name="username" placeholder="Username" required>
+                <input type="text" name="password" placeholder="Password" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="text" name="phone_number" placeholder="Phone Number">
+                <input type="text" name="phone_number" placeholder="Phone Number" required>
+                <input type="text" name="address" placeholder="Address" required>
                 <button type="submit">Add TA</button>
             </form>
-             {% if success %} <!-- displays success message-->
-            <div class = success-display>
-             <p>{{ success }}</p>
-            </div>
-        {% endif %}
-
-         {% if error %} <!-- displays success message-->
-            <div class = error-display>
-             <p>{{ error }}</p>
-            </div>
-        {% endif %}
+            <!-- Delete Form -->
+            <form id="TA-delete-form" class="form-container" method="POST">
+                {% csrf_token %}
+                <input type="text" name="id" placeholder="User ID" required>
+                <button type="submit">Delete TA</button>
+            </form>
+            <!-- Edit Form -->
+            <form id="TA-edit-form" class="form-container" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="role" value="TA">
+                <input type="text" name="id" placeholder="User ID" required>
+                <input type="text" name="username" placeholder="new username">
+                <input type="text" name="password" placeholder="new password">
+                <input type="email" name="email" placeholder="new email">
+                <input type="text" name="phone_number" placeholder="new phone number">
+                <input type="text" name="address" placeholder="new address">
+                <button type="submit">Modify TA</button>
+            </form>
         </div>
     </div>
 </body>
