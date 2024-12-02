@@ -1,30 +1,43 @@
 from django.db import models
 
+# Custom User Model
 class User(models.Model):
-    user_id = models.IntegerField # e.g. 991376811, the PAWS ID#- We won't really use this in tha code
-    username = models.CharField(max_length=25, unique = True)
+    INSTRUCTOR = 'Instructor'
+    TEACHING_ASSISTANT = 'Teaching Assistant'
+    SUPERVISOR = 'Supervisor'
+
+    ROLE_CHOICES = [
+        (INSTRUCTOR, 'Instructor'),
+        (TEACHING_ASSISTANT, 'Teaching Assistant'),
+        (SUPERVISOR, 'Supervisor'),
+    ]
+    user_id = models.AutoField(primary_key=True) #Unigue id, for now just pk
+    username = models.CharField(max_length=25, unique=True)
     password = models.CharField(max_length=50)
-    role = models.CharField(max_length=20)
-    email = models.CharField(unique=True)
-    phone_number = models.CharField(max_length=20, blank=True) # Optional fields, but we don't want them to be null so we use blank
-    address = models.CharField(max_length=255, blank=True)
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)# Instructor or Teaching Assistant or Supervisor
+    email = models.CharField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return self.username
 
+# Lab Model
+class Lab(models.Model):
+    lab_id = models.AutoField(primary_key=True) #Unigue id, for now just pk
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='labs')
+    section_number = models.CharField(max_length=25) #EX 808,801
+    ta = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='labs_as_ta')
+
+    def __str__(self):
+        return f'Lab {self.section_number} for Course {self.course.course_name}'
+
+# Course Model
 class Course(models.Model):
-    course_id = models.IntegerField(unique=True) # eg 11912
-    course_name = models.CharField(max_length=50) # eg COMPSCI 361-401
-    instructor_id = models.ForeignKey(User, on_delete=models.SET_NULL) # Instructor teaching the course, if instructor is deleted course can still exist w/o assignment
+    course_id = models.AutoField(primary_key=True) #Unigue id, for now just pk
+    course_code = models.CharField(max_length=20, unique=True) #Ex CS101
+    course_name = models.CharField(max_length=50) #Ex. Intro to SE
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses_as_instructor')
 
     def __str__(self):
         return self.course_name
-
-class Lab(models.Model):
-    section_id = models.IntegerField() # eg 10933
-    course = models.ForeignKey(Course, on_delete=models.CASCADE) # Course the lab section is a part of, section is deleted if course is deleted
-    section_number = models.IntegerField() # eg 801, 802
-    ta = models.ForeignKey(User, on_delete=models.SET_NULL, optional=True) # TA leading the section, if TA is deleted the section still exists
-
-    def __str__(self):
-        return f'{self.course.course_name}-{self.section_number}'
