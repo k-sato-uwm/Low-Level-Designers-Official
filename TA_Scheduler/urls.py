@@ -16,10 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from scheduler import views
+#from scheduler import views
+from scheduler.views import LoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("login/", views.LoginView, name="login"),
+    path("login/", LoginView.as_view(), name="login"),
 
 ]
