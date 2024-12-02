@@ -1,36 +1,15 @@
+from django.shortcuts import render
 from django.contrib.messages import success
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404
-from django.views import View
-
-
-
 from manager.userManager import UserManagement
-class UserManagementView(View):
-    def get(self, request):
-        return render(request, 'user_management.html')
-
-
-    def post(self, request):
-
-        #action to keep track if user clicks add, edit, or delete
-        action = request.POST.get('action')
-
-        # creates an instance of userManagement and assigns it to user_manager
-        user_manager = UserManagement()
-
-        if action == 'add':
-
-            # assigns result to the result of the create() method,
-            # request.POST gets information from post and passes as param
-            #result will be true or false if user was created and saved
-            result = user_manager.create(request.POST)
-
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .models import User
+
+
 
 class LoginView(View):
     def get(self, request):
@@ -77,6 +56,49 @@ class LoginView(View):
                 return redirect("/instructor_dashboard/")
             else:
                 return redirect("/")  # Default fallback
+
+class Dashboard(View):
+    def get(self, request):
+        userrole = request.session['user']['role']
+
+        match userrole:
+            case 'Supervisor':
+                return render(request, "SupervisorDash.html", {"name": request.session['user']['username']})
+            case 'Instructor':
+                return render(request, "InstDash.html", {"name": request.session['user']['username']})
+            case 'Teaching Assistant':
+                return render(request, "TADash.html", {"name": request.session['user']['username']})
+
+    def post(self, request): #Should not receive POST requests on dashboard page
+        userrole = request.session['user']['role']
+
+        match userrole:
+            case 'Supervisor':
+                return render(request, "SupervisorDash.html", {"name": request.session['user']['username']})
+            case 'Instructor':
+                return render(request, "InstDash.html", {"name": request.session['user']['username']})
+            case 'Teaching Assistant':
+                return render(request, "TADash.html", {"name": request.session['user']['username']})
+
+class UserManagementView(View):
+    def get(self, request):
+        return render(request, 'user_management.html')
+
+
+    def post(self, request):
+
+        #action to keep track if user clicks add, edit, or delete
+        action = request.POST.get('action')
+
+        # creates an instance of userManagement and assigns it to user_manager
+        user_manager = UserManagement()
+
+        if action == 'add':
+
+            # assigns result to the result of the create() method,
+            # request.POST gets information from post and passes as param
+            #result will be true or false if user was created and saved
+            result = user_manager.create(request.POST)
 
 
         elif action == 'delete':
