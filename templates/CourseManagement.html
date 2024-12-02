@@ -115,9 +115,15 @@
     <div class="popup" id="coursePopup">
         <div class="popup-content">
             <h2>Enter Course Name</h2>
-            <form action="/" method="POST"> <!-- Action should send POST form data to python code -->
+            <form action="/courses/" method="POST" > <!-- Action should send POST form data to python code -->
+                {% csrf_token %}
+
                 <label for="courseName">Course Name:</label>
                 <input type="text" name="courseName" id="courseName" placeholder="Enter course name" required>
+
+                <label for="courseCode">Course Code:</label>
+                <input type="text" name="courseCode" id="courseCode" placeholder="Enter course name" required>
+
 
                 <button type="submit">Add Course</button>
                 <button type="button" class="close-btn" onclick="closePopup()">Close</button>
@@ -129,7 +135,7 @@
     <div class="popup" id="editPopup">
         <div class="popup-content">
             <h3>Edit Course</h3>
-            <form action="/assign-instructor" method="POST"> <!-- Form to assign instructor -->
+            <form action="/assign-instructor" method="POST"  > <!-- Form to assign instructor -->
                 <label for="instructor">Assign Instructor:</label>
                 <select name="instructor_id" id="instructor" required>
                     <option value="">Select Instructor</option>
@@ -153,7 +159,7 @@
             <h4>{{ course.course_name }}</h4>
 
             <!-- Display the current instructor name -->
-            <p><strong>Instructor:</strong> {{ course.instructor_id.name }}</p>
+            <p><strong>Instructor:</strong> {{ course.instructor.username }}</p>
 
             <div class="button-container">
                 <!-- Edit Button -->
@@ -161,7 +167,7 @@
                 <button class="edit-btn" onclick="openEditPopup()">Edit</button>
                 <!-- Delete Button -->
                 <form action="/delete-course" method="POST">
-                    <input type="hidden" name="course_id" value="{{ course.id }}">
+                    <input type="hidden" name="course_id" value="{{ course.course_id }}">
                     <button type="submit" class="delete-btn">Delete</button>
                 </form>
             </div>
