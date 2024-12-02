@@ -61,7 +61,7 @@
             width: calc(100% - 12px);
             padding: 5px;
         }
-        .success-display{
+        .success-display, .error-display{
             display: inline-block;
             margin:5px auto;
             width: auto;
@@ -70,6 +70,16 @@
             border-radius: 8px;
             font-size: 14px;
             text-align: center;
+        }
+        .success-display{
+            background-color: lightgreen;
+            color: darkgreen;
+            border: 1px solid green;
+        }
+        .error-display{
+             background-color: lightpink;
+            color: darkred;
+            border: 1px solid pink;
         }
 
 
@@ -116,6 +126,12 @@
              <p>{{ success }}</p>
             </div>
         {% endif %}
+
+         {% if error %} <!-- displays success message-->
+            <div class = error-display>
+             <p>{{ error }}</p>
+            </div>
+        {% endif %}
         </div>
 
 
@@ -141,6 +157,17 @@
                 <input type="text" name="phone_number" placeholder="Phone Number">
                 <button type="submit">Add Supervisor</button>
             </form>
+             {% if success %} <!-- displays success message-->
+            <div class = success-display>
+             <p>{{ success }}</p>
+            </div>
+        {% endif %}
+
+         {% if error %} <!-- displays success message-->
+            <div class = error-display>
+             <p>{{ error }}</p>
+            </div>
+        {% endif %}
         </div>
 
         <!-- TAs Card -->
@@ -169,6 +196,17 @@
                 <input type="text" name="phone_number" placeholder="Phone Number">
                 <button type="submit">Add TA</button>
             </form>
+             {% if success %} <!-- displays success message-->
+            <div class = success-display>
+             <p>{{ success }}</p>
+            </div>
+        {% endif %}
+
+         {% if error %} <!-- displays success message-->
+            <div class = error-display>
+             <p>{{ error }}</p>
+            </div>
+        {% endif %}
         </div>
     </div>
 </body>

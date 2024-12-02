@@ -18,11 +18,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from scheduler.views import UserManagement
+from scheduler.views import  UserManagementView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('usermanagement/', UserManagement.as_view(), name='UserManagement'),
+    path('usermanagement/', UserManagementView.as_view(), name='UserManagement'),
 
     #path('login', Create.as_view(), name='login'),
 
