@@ -8,8 +8,6 @@ from django.views import View
 from manager.userManager import UserManagement
 class UserManagementView(View):
     def get(self, request):
-        # Retrieve the user ID from query parameters (?id=1)
-        user_id = request.GET.get('id')
         return render(request, 'user_management.html')
 
 
