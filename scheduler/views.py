@@ -1,20 +1,14 @@
-from django.shortcuts import render
-from django.contrib.messages import success
-from django.db import IntegrityError
-from django.shortcuts import render, get_object_or_404
 from manager.userManager import UserManagement
 from django.shortcuts import render, redirect
 from django.views import View
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import login
 from django.contrib import messages
 from .models import User
-
-
 
 class LoginView(View):
     def get(self, request):
         # Render the login page when accessed via GET
-        return render(request, "login.html", {})
+        return render(request, "login.html", {"message" : "welcome"})
 
     def post(self, request):
         # Extract username and password from POST data
@@ -45,17 +39,12 @@ class LoginView(View):
         else:
             # Successful login
             request.session["username"] = user.username  # Save user in session
+            request.session['role'] = user.role
             login(request, user)  # Django's session management
 
-            # Redirect based on user role
-            if user.role == "Admin":
-                return redirect("/admin_dashboard/")
-            elif user.role == "TA":
-                return redirect("/ta_dashboard/")
-            elif user.role == "Instructor":
-                return redirect("/instructor_dashboard/")
-            else:
-                return redirect("/")  # Default fallback
+            return redirect("dashboard/")
+            # else:
+            #     return redirect("/")  # Default fallback
 
 class Dashboard(View):
     def get(self, request):
@@ -81,24 +70,23 @@ class Dashboard(View):
                 return render(request, "TADash.html", {"name": request.session['user']['username']})
 
 class UserManagementView(View):
+    # creates an instance of userManagement and assigns it to user_manager
+    user_manager = UserManagement()
+
     def get(self, request):
         return render(request, 'user_management.html')
-
 
     def post(self, request):
 
         #action to keep track if user clicks add, edit, or delete
         action = request.POST.get('action')
 
-        # creates an instance of userManagement and assigns it to user_manager
-        user_manager = UserManagement()
-
         if action == 'add':
 
             # assigns result to the result of the create() method,
             # request.POST gets information from post and passes as param
             #result will be true or false if user was created and saved
-            result = user_manager.create(request.POST)
+            result = self.user_manager.create(request.POST)
 
 
         elif action == 'delete':
@@ -110,7 +98,7 @@ class UserManagementView(View):
             else:
                 #assigns result to logic in delete() from helper class
                 #result will true or false whether user was deleted
-                result = user_manager.delete(request.POST.get('id'))
+                result = self.user_manager.delete(request.POST.get('id'))
 
 
         elif action == 'edit':
@@ -123,7 +111,7 @@ class UserManagementView(View):
 
                 # assigns result to the logic from the update() from helper class
                 #will return true or false whether user was updated
-                result = user_manager.update(user_id)
+                result = self.user_manager.update(user_id)
 
         else:
             result = {'success': False, 'message': 'Invalid action specified.'}
