@@ -1,15 +1,15 @@
 from abc import ABC,abstractmethod
-from scheduler.models import *
+from typing import Any
 class AbstractManager(ABC):
     @abstractmethod
-    def create(self,entry):
+    def create(self,entry) -> None:
         pass
     @abstractmethod
-    def delete(self,entry_id):
+    def delete(self,entry_id) -> None:
         pass
     @abstractmethod
-    def update(self,entry_id,entry):
+    def update(self,entry_id,entry) -> None:
         pass
     @abstractmethod
-    def view(self,entry_id):
+    def view(self,entry_id) -> None:
         pass
