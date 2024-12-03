@@ -197,5 +197,3 @@ class CourseManagementTests(TestCase):
         self.assertEqual(response.status_code, 302)  # Redirect
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(str(messages[0]), "Failed to update course. Instructor or course may not exist.")
-
-
