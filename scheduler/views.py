@@ -109,26 +109,28 @@ class LoginView(View):
 
         else:
             # Successful login
-            request.session["username"] = user.username  # Save user in session
+            request.session['username'] = user.username  # Save user in session
             request.session['role'] = user.role
-            login(request, user)  # Django's session management
+            # login(request, user)  # Django's session management
 
-            return redirect("dashboard/")
+            return redirect("/dashboard/")
             # else:
             #     return redirect("/")  # Default fallback
 
 class Dashboard(View):
     def get(self, request):
-        userrole = request.session['role']
-        username
-
+        try:
+            userrole = request.session['role']
+            username = request.session['username']
+        except Exception as E: # Session not initialized/user not signed in
+            return redirect('/')
         match userrole:
             case 'Supervisor':
-                return render(request, "SupervisorDash.html", {"name": request.session['username']})
+                return render(request, "SupervisorDash.html", {"name": username})
             case 'Instructor':
-                return render(request, "InstDash.html", {"name": request.session['username']})
+                return render(request, "InstDash.html", {"name": username})
             case 'Teaching Assistant':
-                return render(request, "TADash.html", {"name": request.session['username']})
+                return render(request, "TADash.html", {"name": username})
 
     def post(self, request): #Should not receive POST requests on dashboard page
         pass
