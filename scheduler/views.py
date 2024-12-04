@@ -133,7 +133,8 @@ class Dashboard(View):
                 return render(request, "TADash.html", {"name": username})
 
     def post(self, request): #Should not receive POST requests on dashboard page
-        pass
+        raise NotImplementedError('POST Requests should not be received by dashboard page')
+
         # userrole = request.session['role']
         #
         # match userrole:
