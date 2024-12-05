@@ -3,9 +3,9 @@ from django.views import View
 from ManagerClasses.CourseManager import CourseManager
 from ManagerClasses.LoginManager import LoginManager
 from scheduler.models import User, Course
-from manager.userManager import UserManagement
+from ManagerClasses.userManager import UserManagement
 from django.contrib import messages
-from django.contrib.auth import login
+
 
 class CourseManagement(View):
     template_name = 'CourseManagement.html'
