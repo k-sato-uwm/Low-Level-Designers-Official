@@ -1,24 +1,43 @@
 from django.db import models
 
+# Custom User Model
 class User(models.Model):
-    primary_key = models.IntegerField(primary_key=True)
-    user_id = models.IntegerField
-    username = models.CharField(max_length=25)
+    INSTRUCTOR = 'Instructor'
+    TEACHING_ASSISTANT = 'Teaching Assistant'
+    SUPERVISOR = 'Supervisor'
+
+    ROLE_CHOICES = [
+        (INSTRUCTOR, 'Instructor'),
+        (TEACHING_ASSISTANT, 'Teaching Assistant'),
+        (SUPERVISOR, 'Supervisor'),
+    ]
+    user_id = models.AutoField(primary_key=True) #Unigue id, for now just pk
+    username = models.CharField(max_length=25, unique=True)
     password = models.CharField(max_length=50)
-    role = models.CharField(max_length=20)
-    email = models.CharField()
-    phone_number = models.CharField()
-    address = models.CharField()
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)# Instructor or Teaching Assistant or Supervisor
+    email = models.CharField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return self.username
+
+# Lab Model
 class Lab(models.Model):
-    primary_key = models.IntegerField(primary_key=True)
-    course_id = models.IntegerField()
-    section_number = models.CharField(max_length=25)
-    ta_id = models.IntegerField()
+    lab_id = models.AutoField(primary_key=True) #Unigue id, for now just pk
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='labs')
+    section_number = models.CharField(max_length=25) #EX 808,801
+    ta = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='labs_as_ta')
 
+    def __str__(self):
+        return f'Lab {self.section_number} for Course {self.course.course_name}'
+
+# Course Model
 class Course(models.Model):
-    primary_key = models.IntegerField(primary_key=True)
-    course_id = models.IntegerField()
-    course_name = models.CharField(max_length=50)
-    lab_section = models.ForeignKey(Lab, on_delete=models.CASCADE)
-    instructor_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    course_id = models.AutoField(primary_key=True) #Unigue id, for now just pk
+    course_code = models.CharField(max_length=20, unique=True) #Ex CS101
+    course_name = models.CharField(max_length=50) #Ex. Intro to SE
+    instructor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses_as_instructor')
+
+    def __str__(self):
+        return self.course_name
