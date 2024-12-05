@@ -1,5 +1,5 @@
 from django.test import TestCase
-from manager.userManager import UserManagement
+from ManagerClasses.userManager import UserManagement
 from scheduler.models import User
 
 
