@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from manager.userManager import UserManagement
 from scheduler.models import User
-
+from django.contrib import messages
 
 class UserManagementView(View):
 
@@ -63,6 +63,11 @@ class UserManagementView(View):
 
         else:
             result = {'success': False, 'message': 'Invalid action specified.'}
+
+        if result['success']:
+            messages.success(request, result['message'])
+        else:
+            messages.error(request, result['message'])
 
         # this renders the result
         # if result['success'] is true then the success message will display, else it will do nothing

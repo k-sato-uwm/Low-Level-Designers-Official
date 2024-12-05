@@ -5,7 +5,6 @@ from scheduler.models import User
 
 class UserManagement:
     def create(self, entry):
-
         try:
             role = entry.get('role')
             username = entry.get('username')
