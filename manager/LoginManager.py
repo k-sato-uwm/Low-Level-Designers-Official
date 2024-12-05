@@ -6,8 +6,8 @@ class LoginManager:
     def verify_credentials(username, password):
         try:
             # Check if the user exists
-            user = User.objects.get(username=username)
-            if user.check_password(password):  # Validate password
+            user = User.objects.get(username=username, password=password)
+            if user.password==password:  # Validate password
                 return {"success": True, "user": user}
             else:
                 return {"success": False, "message": "Incorrect password."}

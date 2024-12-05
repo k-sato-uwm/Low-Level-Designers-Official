@@ -28,11 +28,12 @@ class LoginView(View):
         request.session["username"] = user.username
 
         # Redirect based on user role
-        if user.role == "Admin":
-            return redirect("/admin_dashboard/")
-        elif user.role == "TA":
-            return redirect("/ta_dashboard/")
-        elif user.role == "Instructor":
-            return redirect("/instructor_dashboard/")
-        else:
-            return redirect("/")  # Default
+        # if user.role == "Admin":
+        #     return redirect("/admin_dashboard/")
+        # elif user.role == "TA":
+        #     return redirect("/ta_dashboard/")
+        # elif user.role == "Instructor":
+        #     return redirect("/instructor_dashboard/")
+        # else:
+        #     return redirect("/")  # Default
+        return redirect("/dashboard/")
