@@ -77,34 +77,3 @@ class LoginTests(TestCase):
         self.client.post(self.url, data)
         self.assertEqual(self.client.session['username'], 'test_user')
 
-    # def test_logout_user(self):
-    #     """Test the logout functionality."""
-    #     # Login the user first
-    #     self.client.post(self.url, {'username': 'test_user', 'password': 'securepassword'})
-    #     response = self.client.get(reverse('logout'))  # Assuming logout URL is named 'logout'
-    #     self.assertEqual(response.status_code, 302)  # Redirect after logout
-    #     self.assertNotIn('_auth_user_id', self.client.session)  # Session should be cleared
-
-    # def test_concurrent_login_attempts(self):
-    #     """Test handling of multiple simultaneous login attempts."""
-    #     for _ in range(10):  # Simulate 10 login attempts
-    #         data = {'username': 'test_user', 'password': 'securepassword'}
-    #         response = self.client.post(self.url, data)
-    #         self.assertEqual(response.status_code, 302)
-    #         self.assertEqual(response.url, '/ta_dashboard/')
-
-    # def test_login_manager_valid_credentials(self):
-    #     """Test the LoginManager's verify_credentials method with valid credentials."""
-    #     result = LoginManager.verify_credentials('test_user', 'securepassword')
-    #     self.assertIsNotNone(result)
-    #     self.assertEqual(result.username, 'test_user')
-    #
-    # def test_login_manager_invalid_credentials(self):
-    #     """Test the LoginManager's verify_credentials method with invalid credentials."""
-    #     result = LoginManager.verify_credentials('test_user', 'wrongpassword')
-    #     self.assertIsNone(result)
-    #
-    # def test_login_manager_nonexistent_user(self):
-    #     """Test the LoginManager's verify_credentials method with nonexistent user."""
-    #     result = LoginManager.verify_credentials('nonexistent_user', 'securepassword')
-    #     self.assertIsNone(result)
