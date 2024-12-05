@@ -3,6 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <title>TA Dashboard</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Verdana', sans-serif;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 0;
+            color: #34495e;
+        }
+
+        /* Header Styles */
+        h1, h2 {
+            text-align: center;
+            color: #2e4053;
+            margin-top: 20px;
+        }
+
+        /* Table Styles */
+        table {
+            margin: 30px auto;
+            border-collapse: collapse;
+            width: 75%;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        td {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            border-bottom: 1px solid #d5d8dc;
+        }
+
+        td:last-child {
+            border-bottom: none;
+        }
+
+        td a {
+            display: inline-block;
+            text-decoration: none;
+            color: #ffffff;
+            background-color: #27ae60;
+            padding: 10px 25px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        td a:hover {
+            background-color: #229954;
+            transform: scale(1.05);
+        }
+
+        /* Table Row Hover Effect */
+        tr:hover {
+            background-color: #f9f9fb;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            table {
+                width: 90%;
+            }
+
+            td {
+                font-size: 16px;
+                padding: 15px;
+            }
+
+            td a {
+                font-size: 14px;
+                padding: 8px 20px;
+            }
+        }
+
+    </style>
 </head>
 <body>
     <h1>Welcome {{ name }}</h1>
