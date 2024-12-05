@@ -4,7 +4,7 @@ from .models import User
 from manager.LoginManager import LoginManager
 from django.contrib.messages import get_messages
 
-
+# pageload, blank, and invalid username passing
 class LoginTests(TestCase):
     def setUp(self):
         self.client = Client()
