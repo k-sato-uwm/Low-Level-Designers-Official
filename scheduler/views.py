@@ -1,13 +1,10 @@
-from django.shortcuts import render
-from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.views import View
 from ManagerClasses.CourseManager import CourseManager
+from ManagerClasses.LoginManager import LoginManager
 from scheduler.models import User, Course
 from manager.userManager import UserManagement
-from scheduler.models import User
 from django.contrib import messages
-
 from django.contrib.auth import login
 
 class CourseManagement(View):
@@ -83,43 +80,36 @@ class CourseManagement(View):
 class LoginView(View):
     def get(self, request):
         # Render the login page when accessed via GET
-        return render(request, "login.html", {"message" : "welcome"})
+        return render(request, "login.html", {})
 
     def post(self, request):
-        # Extract username and password from POST data
-        username = request.POST.get('username')
-        password = request.POST.get('password')
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-        # Initialize flags for specific errors
-        no_such_user = False
-        bad_password = False
-        user = None  # Initialize the 'user' variable to avoid warnings.
+        # Call LoginManager to verify credentials
+        result = LoginManager.verify_credentials(username, password)
 
-        try:
-            # Try to retrieve the user from the database
-            user = User.objects.get(username=username)
-            bad_password = (user.password != password)  # Check if the password matches
-        except User.DoesNotExist:
-            no_such_user = True
+        if not result["success"]:
+            # If unsuccessful, show an error message
+            messages.error(request, result["message"])
+            return render(request, "login.html", {"message": result["message"]})
 
-        if no_such_user:
-            # Handle case where user does not exist (optional: auto-register the user)
-            messages.error(request, "User does not exist. Please register.")
-            return render(request, "login.html", {"message": "User does not exist."})
+        # On success, simulate login using session or return success message
+        user = result['user']
+        # login(request, user)
+        request.session["username"] = user.username
+        request.session['role'] = user.role
 
-        elif bad_password:
-            # Handle case where the password is incorrect
-            return render(request, "login.html", {"message": "Incorrect password."})
-
-        else:
-            # Successful login
-            request.session['username'] = user.username  # Save user in session
-            request.session['role'] = user.role
-            # login(request, user)  # Django's session management
-
-            return redirect("/dashboard/")
-            # else:
-            #     return redirect("/")  # Default fallback
+        # Redirect based on user role
+        # if user.role == "Admin":
+        #     return redirect("/admin_dashboard/")
+        # elif user.role == "TA":
+        #     return redirect("/ta_dashboard/")
+        # elif user.role == "Instructor":
+        #     return redirect("/instructor_dashboard/")
+        # else:
+        #     return redirect("/")  # Default
+        return redirect("/dashboard/")
 
 class Dashboard(View):
     def get(self, request):
