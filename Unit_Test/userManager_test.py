@@ -1,11 +1,11 @@
 from django.test import TestCase
 from manager.userManager import UserManagement
 from scheduler.models import User
-from django.db.utils import IntegrityError
+
 
 class UserManagementTests(TestCase):
     def setUp(self):
-        # Create sample data for testing
+
         self.user_management = UserManagement()
         self.test_user = User.objects.create(
             username="test_user",
@@ -17,7 +17,7 @@ class UserManagementTests(TestCase):
         )
 
     def test_create_user_success(self):
-        # Test creating a user successfully
+
         entry = {
             'username': 'new_user',
             'role': User.TEACHING_ASSISTANT,
@@ -32,9 +32,9 @@ class UserManagementTests(TestCase):
         self.assertTrue(User.objects.filter(username=entry['username']).exists())
 
     def test_create_user_duplicate(self):
-        # Test creating a user with a duplicate username
+
         entry = {
-            'username': 'test_user',  # Duplicate username
+            'username': 'test_user',
             'role': User.SUPERVISOR,
             'email': 'duplicate@example.com',
             'phone_number': '1112223333',
@@ -47,7 +47,7 @@ class UserManagementTests(TestCase):
 
 
     def test_update_user(self):
-        # Test updating an existing user
+
         user_id = self.test_user.user_id
         entry = {
             'username': 'updated_user',
@@ -65,8 +65,8 @@ class UserManagementTests(TestCase):
         self.assertEqual(updated_user.email, entry['email'])
 
     def test_update_user_nonexistent(self):
-        # Test updating a nonexistent user
-        user_id = 99999  # Nonexistent user ID
+
+        user_id = 99999
         entry = {
             'username': 'nonexistent_user',
             'role': User.TEACHING_ASSISTANT,
@@ -80,7 +80,7 @@ class UserManagementTests(TestCase):
         self.assertEqual(result['message'], 'User does not exist!')
 
     def test_delete_user_success(self):
-        # Test deleting an existing user
+
         user_id = self.test_user.user_id
         result = self.user_management.delete(user_id)
         self.assertTrue(result['success'])
@@ -88,8 +88,8 @@ class UserManagementTests(TestCase):
         self.assertFalse(User.objects.filter(pk=user_id).exists())
 
     def test_delete_user_nonexistent(self):
-        # Test deleting a nonexistent user
-        user_id = 99999  # Nonexistent user ID
+
+        user_id = 99999
         result = self.user_management.delete(user_id)
         self.assertFalse(result['success'])
         self.assertEqual(result['message'], 'User does not exist!')
