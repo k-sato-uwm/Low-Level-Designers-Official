@@ -1,37 +1,60 @@
+from django.db import IntegrityError
+
+from scheduler.models import User
+
+
 class UserManagement:
-
     def create(self, entry):
-        # everything below in comments is basically the code for the create method
-        # try: // gets info
-        #  role = request.POST.get('role')
-        #  username = request.POST.get('username')
-        # email = request.POST.get('email')
-        # phone_number = request.POST.get('phone_number', '')
-        # address = request.POST.get('address', '')
-        # password = request.POST.get('password', '')
 
+        try:
+            role = entry.get('role')
+            username = entry.get('username')
+            email = entry.get('email')
+            phone_number = entry.get('phone_number', '')
+            address = entry.get('address', '')
+            password = entry.get('password', '')
 
-        # user = User(  //creating a new user
-        #     role=role,
-        #     username=username,
-        #    email=email,
-        #     phone_number=phone_number,
-        #    address=address,
-        #  password=password
-        #   )
-        # user.save()
-        #// the code right below this returns a true or false along with a message or throws an exception
-        #  return {'success': True, 'message': f'{role} {username} added successfully!'}
-        #         except IntegrityError:
-        #             return {'success': False, 'message': 'User already exists!'}
-        # everything in comments above is basically the code for the create method
-        pass
+            user = User(
+                role=role,
+                username=username,
+                email=email,
+                phone_number=phone_number,
+                address=address,
+                password=password,
+            )
+            user.save()
+            return {'success': True, 'message': f'{role} {username} added successfully!'}
+        except IntegrityError:
+            return {'success': False, 'message': 'User already exists!'}
+        except Exception as e:
+            return {'success': False, 'message': f'Error occurred: {str(e)}'}
 
-    def view(self, user_id):
-        pass
+    def update(self, user_id, entry):
+        try:
 
-    def update(self, user):
-        pass
+            user = User.objects.get(user_id =user_id)
+
+            user.username = entry.get('username', user.username)
+            user.role = entry.get('role', user.role)
+            user.email = entry.get('email', user.email)
+            user.phone_number = entry.get('phone_number', user.phone_number)
+            user.address = entry.get('address', user.address)
+            user.password = entry.get('password', user.password)
+
+            user.save()
+            return {'success': True, 'message': 'User updated successfully!'}
+        except User.DoesNotExist:
+            return {'success': False, 'message': 'User does not exist!'}
+        except Exception as e:
+            return {'success': False, 'message': f'Error occurred: {str(e)}'}
 
     def delete(self, user_id):
-        pass
+        try:
+
+            user = User.objects.get(user_id=user_id)
+            user.delete()
+            return {'success': True, 'message': 'User deleted successfully!'}
+        except User.DoesNotExist:
+            return {'success': False, 'message': 'User does not exist!'}
+        except Exception as e:
+            return {'success': False, 'message': f'Error occurred: {str(e)}'}

@@ -1,14 +1,21 @@
-from django.contrib.messages import success
-from django.db import IntegrityError
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.views import View
-
-
-
 from manager.userManager import UserManagement
+from scheduler.models import User
+
+
 class UserManagementView(View):
+
     def get(self, request):
-        return render(request, 'user_management.html')
+        instructors = User.objects.filter(role='Instructor')
+        supervisors = User.objects.filter(role='Supervisor')
+        tas = User.objects.filter(role='TA')
+
+        return render(request, 'user_management.html', {
+            'instructors': instructors,
+            'supervisors': supervisors,
+            'tas': tas,
+        })
 
 
     def post(self, request):
@@ -18,6 +25,8 @@ class UserManagementView(View):
 
         # creates an instance of userManagement and assigns it to user_manager
         user_manager = UserManagement()
+
+        role = request.POST.get('role')
 
         if action == 'add':
 
@@ -37,7 +46,7 @@ class UserManagementView(View):
             else:
                 #assigns result to logic in delete() from helper class
                 #result will true or false whether user was deleted
-                result = user_manager.delete(request.POST.get('id'))
+                result = user_manager.delete(user_id)
 
 
         elif action == 'edit':
@@ -50,7 +59,7 @@ class UserManagementView(View):
 
                 # assigns result to the logic from the update() from helper class
                 #will return true or false whether user was updated
-                result = user_manager.update(user_id)
+                result = user_manager.update(user_id, request.POST)
 
         else:
             result = {'success': False, 'message': 'Invalid action specified.'}
@@ -61,4 +70,5 @@ class UserManagementView(View):
         return render(request, 'user_management.html', {
             'success': result['message'] if result['success'] else None,
             'error': result['message'] if not result['success'] else None,
+            'role': role,
         })
