@@ -3,14 +3,17 @@ from django.contrib import messages
 from scheduler.models import User
 class LoginManager:
     @staticmethod
-    def verify_credentials(self, username, password):
+    def verify_credentials(username, password):
         try:
+            # Check if the user exists
             user = User.objects.get(username=username)
-            if user.password == password:
-                return {'success': True, 'message': 'You have successfully logged in.'}
+            if user.check_password(password):  # Validate password
+                return {"success": True, "user": user}
+            else:
+                return {"success": False, "message": "Incorrect password."}
         except User.DoesNotExist:
-            return {'success': False, 'message': 'User does not exist'}
-        return None
+            return {"success": False, "message": "User not found."}
+
     def logout_user(request):
         logout(request)
     def is_user_logged_in(request):

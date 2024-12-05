@@ -3,7 +3,7 @@ from django.views import View
 from django.contrib.auth import authenticate, login
 from manager.LoginManager import LoginManager
 from django.contrib import messages
-from .models import User
+from scheduler.models import User
 
 class LoginView(View):
     def get(self, request):
@@ -11,29 +11,28 @@ class LoginView(View):
         return render(request, "login.html", {})
 
     def post(self, request):
-        def post(self, request):
-            # Extract username and password from POST data
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-            # Use the LoginManager to verify credentials
-            user = LoginManager.verify_credentials(username, password)
+        # Call LoginManager to verify credentials
+        result = LoginManager.verify_credentials(username, password)
 
-            if user is None:
-                # Handle invalid credentials
-                messages.error(request, "Invalid username or password.")
-                return render(request, "login.html", {"message": "Invalid username or password."})
+        if not result["success"]:
+            # If unsuccessful, show an error message
+            messages.error(request, result["message"])
+            return render(request, "login.html", {"message": result["message"]})
 
-            # Successful login
-            request.session["username"] = user.username  # Save user in session
-            login(request, user)  # Use Django's session management
+        # On success, simulate login using session or return success message
+        user = User.objects.get(username=username)
+        login(request, user)
+        request.session["username"] = user.username
 
-            # Redirect based on user role
-            if user.role == "Admin":
-                return redirect("/admin_dashboard/")
-            elif user.role == "TA":
-                return redirect("/ta_dashboard/")
-            elif user.role == "Instructor":
-                return redirect("/instructor_dashboard/")
-            else:
-                return redirect("/")  # Default
+        # Redirect based on user role
+        if user.role == "Admin":
+            return redirect("/admin_dashboard/")
+        elif user.role == "TA":
+            return redirect("/ta_dashboard/")
+        elif user.role == "Instructor":
+            return redirect("/instructor_dashboard/")
+        else:
+            return redirect("/")  # Default
