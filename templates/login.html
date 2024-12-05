@@ -4,6 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Verdana', sans-serif;
+            background-color: #eef2f3;
+            margin: 0;
+            padding: 0;
+            color: #34495e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Login Container */
+        .login-container {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Header */
+        .login-container h1 {
+            color: #2e4053;
+            margin-bottom: 20px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #d5d8dc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: #27ae60;
+            outline: none;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 10px 0;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #27ae60;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: #229954;
+            transform: scale(1.02);
+        }
+
+        /* Message Label */
+        .login-container label {
+            color: #e74c3c; /* For error messages */
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 15px;
+            }
+
+            .btn {
+                font-size: 14px;
+            }
+        }
+
+    </style>
 </head>
 <body>
     <div class="login-container">
