@@ -152,6 +152,9 @@ class UserManagementView(View):
         })
 
     def post(self, request):
+        instructors = User.objects.filter(role='Instructor')
+        supervisors = User.objects.filter(role='Supervisor')
+        tas = User.objects.filter(role='TA')
 
         #action to keep track if user clicks add, edit, or delete
         action = request.POST.get('action')
@@ -209,4 +212,7 @@ class UserManagementView(View):
             'success': result['message'] if result['success'] else None,
             'error': result['message'] if not result['success'] else None,
             'role': role,
+            'instructors': instructors,
+            'supervisors': supervisors,
+            'tas': tas,
         })
