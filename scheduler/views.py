@@ -157,14 +157,13 @@ class UserManagementView(View):
         tas = User.objects.filter(role='TA')
 
         #action to keep track if user clicks add, edit, or delete
-        action = request.POST.get('action')
 
         # creates an instance of userManagement and assigns it to user_manager
         user_manager = UserManagement()
 
         role = request.POST.get('role')
 
-        if action == 'add':
+        if "add" in request.POST:
 
             # assigns result to the result of the create() method,
             # request.POST gets information from post and passes as param
@@ -173,7 +172,7 @@ class UserManagementView(View):
 
 
 
-        elif action == 'delete':
+        if "delete" in request.POST:
 
             #tries to get id to make sure user exist
             user_id = request.POST.get('id')
@@ -185,7 +184,7 @@ class UserManagementView(View):
                 result = user_manager.delete(user_id)
 
 
-        elif action == 'edit':
+        if "edit" in request.POST:
 
             # checks for id to see if user exist
             user_id = request.POST.get('id')
