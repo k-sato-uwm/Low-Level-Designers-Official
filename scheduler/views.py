@@ -162,7 +162,7 @@ class UserManagementView(View):
 
         role = request.POST.get('role')
 
-        if "add" in request.POST:
+        if action == 'add':
 
             # assigns result to the result of the create() method,
             # request.POST gets information from post and passes as param
