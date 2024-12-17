@@ -1,6 +1,6 @@
 from django.test import TestCase
 from scheduler.models import Lab
-from ManagerClasses.LabManager import *
+from ManagerClasses.LabManager import LabManager
 
 class TestLabManager(TestCase):
     def setUp(self):
