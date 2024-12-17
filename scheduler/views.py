@@ -156,7 +156,6 @@ class UserManagementView(View):
         supervisors = User.objects.filter(role='Supervisor')
         tas = User.objects.filter(role='TA')
 
-        #action to keep track if user clicks add, edit, or delete
 
         # creates an instance of userManagement and assigns it to user_manager
         user_manager = UserManagement()
