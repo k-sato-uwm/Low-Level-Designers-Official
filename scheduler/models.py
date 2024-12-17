@@ -25,7 +25,7 @@ class User(models.Model):
 # Lab Model
 class Lab(models.Model):
     lab_id = models.AutoField(primary_key=True) #Unigue id, for now just pk
-    # course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='labs')
+    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='labs')
     section_number = models.CharField(max_length=25) #EX 808,801
     # ta = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='labs_as_ta')
 
