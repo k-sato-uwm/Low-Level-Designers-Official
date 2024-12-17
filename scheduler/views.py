@@ -178,8 +178,6 @@ class UserManagementView(View):
             #result will be true or false if user was created and saved
             result = user_manager.create(request.POST)
 
-
-
         elif action == 'delete':
 
             #tries to get id to make sure user exist

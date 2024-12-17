@@ -92,11 +92,6 @@
         <!-- Instructors Card -->
         <div class="card">
             <h2>Instructors:</h2>
-            <ul>
-                <li>Name</li>
-                <li>Course</li>
-                <li>Lab Section</li>
-            </ul>
             <div class="edit-section">
                 <ul>
                     <li onclick="toggleForm('Instructor-add-form')">Add</li>
@@ -130,6 +125,8 @@
             <!-- Delete Form -->
             <form id="Instructor-delete-form" class="form-container" method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                 <input type="hidden" name="role" value="Instructor">
                 <input type="text" name="id" placeholder="User ID" required>
                 <button type="submit">Delete Instructor</button>
             </form>
@@ -152,9 +149,6 @@
         <!-- Supervisors Card -->
         <div class="card">
             <h2>Supervisors:</h2>
-            <ul>
-                <li>Name</li>
-            </ul>
             <div class="edit-section">
                 <ul>
                     <li onclick="toggleForm('Supervisor-add-form')">Add</li>
@@ -188,8 +182,12 @@
             <!-- Delete Form -->
             <form id="Supervisor-delete-form" class="form-container" method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="role" value="Supervisor">
                 <input type="text" name="id" placeholder="User ID" required>
                 <button type="submit">Delete Supervisor</button>
+
+
             </form>
             <!-- Edit Form -->
             <form id="Supervisor-edit-form" class="form-container" method="POST">
@@ -209,11 +207,6 @@
         <!-- TAs Card -->
         <div class="card">
             <h2>TAs:</h2>
-            <ul>
-                <li>Name</li>
-                <li>Lab Section</li>
-                <li>Course Section</li>
-            </ul>
             <div class="edit-section">
                 <ul>
                     <li onclick="toggleForm('TA-add-form')">Add</li>
@@ -247,6 +240,8 @@
             <!-- Delete Form -->
             <form id="TA-delete-form" class="form-container" method="POST">
                 {% csrf_token %}
+                <input type="hidden" name="action" value="delete">
+                 <input type="hidden" name="role" value="TA">
                 <input type="text" name="id" placeholder="User ID" required>
                 <button type="submit">Delete TA</button>
             </form>
