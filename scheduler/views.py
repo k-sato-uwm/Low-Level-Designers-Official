@@ -141,22 +141,16 @@ class Dashboard(View):
 class UserManagementView(View):
 
     def get(self, request):
-        instructors = User.objects.filter(role='Instructor')
-        supervisors = User.objects.filter(role='Supervisor')
-        tas = User.objects.filter(role='TA')
+        users = User.objects.all()
+        return render(request, 'user_management.html', {'users': users})
 
-        return render(request, 'user_management.html', {
-            'instructors': instructors,
-            'supervisors': supervisors,
-            'tas': tas,
-        })
 
     def post(self, request):
         instructors = User.objects.filter(role='Instructor')
         supervisors = User.objects.filter(role='Supervisor')
         tas = User.objects.filter(role='TA')
 
-        action = request.post()
+        action = request.POST.get('action')
         # creates an instance of userManagement and assigns it to user_manager
         user_manager = UserManagement()
 
@@ -171,7 +165,7 @@ class UserManagementView(View):
 
 
 
-        if "delete" in request.POST:
+        elif action == 'delete':
 
             #tries to get id to make sure user exist
             user_id = request.POST.get('id')
@@ -183,7 +177,7 @@ class UserManagementView(View):
                 result = user_manager.delete(user_id)
 
 
-        if "edit" in request.POST:
+        elif action == 'edit':
 
             # checks for id to see if user exist
             user_id = request.POST.get('id')
@@ -206,11 +200,10 @@ class UserManagementView(View):
         # this renders the result
         # if result['success'] is true then the success message will display, else it will do nothing
         # if result['success'] is false then the error message will display, else it will do nothing
+
+        users = User.objects.all()
         return render(request, 'user_management.html', {
-            'success': result['message'] if result['success'] else None,
-            'error': result['message'] if not result['success'] else None,
-            'role': role,
-            'instructors': instructors,
-            'supervisors': supervisors,
-            'tas': tas,
+            'users': users,
+            'success': result['message'] if result ['success'] else None,
+            'error': result['message'] if result ['success'] else None,
         })
