@@ -7,12 +7,15 @@ class TestCourseManager(TestCase):
     def setUp(self):
         # create a test instructor
         self.instructor = User.objects.create(username="test_instructor", user_id=1)
+        self.user2=User.objects.create(username='test_user2', user_id=2)
         # create a test course
         self.course = Course.objects.create(
             course_code="CS101",
             course_name="Intro to Computer Science",
-            instructor=self.instructor
         )
+        self.assignment = Assignments.objects.create(user=self.instructor, course=self.course)
+        self.assignment2 = Assignments.objects.create(user=self.user2, course=self.course)
+
 #create() Tests
     def test_create_successful(self):
         entry = {
@@ -63,7 +66,7 @@ class TestCourseManager(TestCase):
 #update() Tests
     def test_update_successful(self):
         entry = {
-            "instructor_name": "test_instructor",
+            "user_names": ["test_instructor"],
             "course_name": "Updated Course Name"
         }
         result = CourseManager.update(self.course.course_id, entry)
@@ -73,7 +76,7 @@ class TestCourseManager(TestCase):
 
     def test_update_invalid_course(self):
         entry = {
-            "instructor_name": "test_instructor",
+            "user_names": ["test_instructor"],
             "course_name": "Nonexistent Course"
         }
         result = CourseManager.update(999, entry)  # Invalid course ID
@@ -81,10 +84,11 @@ class TestCourseManager(TestCase):
 
     def test_update_nonexistent_instructor(self):
         entry = {
-            "instructor_name": "nonexistent_instructor"
+            "user_names": ["nonexistent_instructor"]
         }
         result = CourseManager.update(self.course.course_id, entry)
         self.assertFalse(result)
+
 #delete() Tests
     def test_delete_successful(self):
         result = CourseManager.delete(self.course.course_id)
