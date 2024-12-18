@@ -37,7 +37,7 @@
 
         /* Button Styling */
         .btn {
-            background-color: #007BFF;
+            background-color: green;
             color: white;
             border: none;
             padding: 8px 16px;
@@ -49,7 +49,7 @@
             transition: background-color 0.3s;
         }
         .btn:hover {
-            background-color: #0056b3;
+            background-color: royalblue;
         }
     </style>
     <script>
@@ -85,7 +85,8 @@
             <!-- Success/Error Messages -->
             {% if success %}
                 <div class="success-display" id="successMessage">{{ success }}</div>
-            {% elif error %}
+            {% endif %}
+            {% if error %}
                 <div class="error-display" id="errorMessage">{{ error }}</div>
             {% endif %}
 
@@ -102,7 +103,7 @@
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="text" name="phone_number" placeholder="Phone Number" required>
+                <input type="tel" name="phone_number" pattern="[0-9]{10}" placeholder="Phone Number ex: 414802145" required>
                 <input type="text" name="address" placeholder="Address" required>
                 <button type="submit">Add User</button>
             </form>
@@ -130,7 +131,7 @@
         </div>
     </div>
 
-    <!-- User List Section -->
+    <!-- display Section -->
     <div class="section-container">
         <!-- Instructor Box -->
         <div class="list">

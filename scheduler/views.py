@@ -203,6 +203,6 @@ class UserManagementView(View):
         return render(request, 'user_management.html', {
             'users': users,
             'success': result['message'] if result ['success'] else None,
-            'error': result['message'] if result ['success'] else None,
+            'error': result['message'] if not result ['success'] else None,
         })
 

@@ -35,14 +35,33 @@ class UserManagementAcceptanceTests(TestCase):
         )
 
     def test_get_user_management_page(self):
+        # Test that the GET request returns the correct template and status code
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'user_management.html')
-        self.assertIn('instructors', response.context)
-        self.assertIn('supervisors', response.context)
-        self.assertIn('tas', response.context)
 
-    def test_create_user_success(self):
+        # Test that the context includes users
+        self.assertIn('users', response.context)
+        self.assertTrue(len(response.context['users']) > 0)
+
+
+    def test_create_supervisor_success(self):
+        data = {
+            'action': 'add',
+            'role': User.SUPERVISOR,
+            'username': 'new_user',
+            'email': 'new_user@example.com',
+            'phone_number': '9876543210',
+            'address': '456 New Street',
+            'password': 'securepassword'
+        }
+        response = self.client.post(self.url, data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(User.objects.filter(username='new_user').exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn('Supervisor new_user added successfully!', str(messages[0]))
+
+    def test_create_TA_success(self):
         data = {
             'action': 'add',
             'role': User.TEACHING_ASSISTANT,
@@ -57,6 +76,23 @@ class UserManagementAcceptanceTests(TestCase):
         self.assertTrue(User.objects.filter(username='new_user').exists())
         messages = list(get_messages(response.wsgi_request))
         self.assertIn('Teaching Assistant new_user added successfully!', str(messages[0]))
+
+    def test_create_Instructor_success(self):
+        data = {
+            'action': 'add',
+            'role': User.INSTRUCTOR,
+            'username': 'new_user',
+            'email': 'new_user@example.com',
+            'phone_number': '9876543210',
+            'address': '456 New Street',
+            'password': 'securepassword'
+        }
+        response = self.client.post(self.url, data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(User.objects.filter(username='new_user').exists())
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn('Instructor new_user added successfully!', str(messages[0]))
+
 
     def test_create_user_duplicate(self):
         entry = {
