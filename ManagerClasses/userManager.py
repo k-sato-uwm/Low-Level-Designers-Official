@@ -21,7 +21,7 @@ class UserManagement:
             address = entry.get('address', '')
             password = entry.get('password', '')
 
-            #checks if username already exist
+           # checks if username already exist
             if User.objects.filter(username=username).exists():
                 return {'success': False, 'message': 'User already exists!'}
 
@@ -29,9 +29,6 @@ class UserManagement:
             if User.objects.filter(password=password).exists():
                 return {'success': False, 'message': 'Password already exists.'}
 
-            #checks to make sure role is valid
-            if entry.get('role') not in ["Instructor", "Supervisor", "Teaching Assistant"]:
-                return {'success': False, 'message': 'Invalid role specified'}
 
             user = User(
                 role=role,

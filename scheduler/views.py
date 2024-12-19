@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from sqlparse.sql import Assignment
 from ManagerClasses.CourseManager import CourseManager
 from ManagerClasses.LoginManager import LoginManager
-from scheduler.models import User, Course
+from scheduler.models import User, Course, Assignments
 from ManagerClasses.userManager import UserManagement
 from django.contrib import messages
 
@@ -218,8 +219,116 @@ class UserManagementView(View):
             'error': result['message'] if not result ['success'] else None,
         })
 
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
+from django.contrib import messages
+from .models import Course, Lab, User, Assignments
+
+
 class CourseEditView(View):
-    pass
+
+    template_name = "edit_course.html"
+
+    def get(self, request, course_id):
+        # Fetch the course and associated lab sections
+        course = get_object_or_404(Course, pk=course_id)
+        labs = Lab.objects.filter(course=course)
+
+        # Fetch instructors and teaching assistants
+        instructors = User.objects.filter(role=User.INSTRUCTOR)
+        assistants = User.objects.filter(role=User.TEACHING_ASSISTANT)
+
+        # Pass data to the template
+        context = {
+            "course": course,
+            "labs": labs,
+            "instructors": instructors,
+            "assistants": assistants,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, course_id):
+        # Fetch the course
+        course = get_object_or_404(Course, pk=course_id)
+
+        if "save_course" in request.POST:
+            # Handle updating the course
+            course_code = request.POST.get("course_code")
+            course_name = request.POST.get("course_name")
+            instructor_id = request.POST.get("instructor_id")
+            if course_code and course_name and instructor_id:
+                course.course_code = course_code
+                course.course_name = course_name
+                course.save()
+                messages.success(request, "Course updated successfully!")
+            else:
+                messages.error(request, "All fields are required to update the course.")
+
+        elif "add_lab" in request.POST:
+            # Handle adding a new lab section
+            lab_name = request.POST.get("lab_name")
+            ta_id = request.POST.get("ta_id")
+            if lab_name and ta_id:
+                teaching_assistant = get_object_or_404(User, pk=ta_id, role=User.TEACHING_ASSISTANT)
+                lab = Lab.objects.create(course=course, section_number=lab_name)
+
+                # Create a corresponding assignment entry
+                Assignments.objects.create(user=teaching_assistant, course=course, lab=lab)
+
+                messages.success(request, "Lab section and assignment added successfully!")
+            else:
+                messages.error(request, "All fields are required to add a lab section.")
+
+        elif "edit_lab" in request.POST:
+            # Handle editing an existing lab section
+            lab_id = request.POST.get("lab_id")
+            lab_name = request.POST.get("lab_name")
+            ta_id = request.POST.get("ta_id")
+            lab = get_object_or_404(Lab, pk=lab_id, course=course)
+            if lab_name and ta_id:
+                teaching_assistant = get_object_or_404(User, pk=ta_id, role=User.TEACHING_ASSISTANT)
+                lab.section_number = lab_name
+                lab.save()
+
+                # Update assignment if necessary
+                assignment, created = Assignments.objects.get_or_create(course=course, lab=lab)
+                assignment.user = teaching_assistant
+                assignment.save()
+
+                messages.success(request, "Lab section and assignment updated successfully!")
+            else:
+                messages.error(request, "All fields are required to edit the lab section.")
+
+        elif "delete_lab" in request.POST:
+            # Handle deleting a lab section
+            lab_id = request.POST.get("delete_lab")
+            lab = get_object_or_404(Lab, pk=lab_id, course=course)
+            lab.delete()
+
+            # Remove associated assignments
+            Assignments.objects.filter(course=course, lab=lab).delete()
+
+            messages.success(request, "Lab section and associated assignments deleted successfully!")
+
+        # Redirect to refresh the page
+        return redirect("edit_course", course_id=course_id)
+
+class userAll(View):
+    def get(self, request):
+        users = User.objects.all()
+        courses = Course.objects.all()
+        assignments = Assignments.objects.all()
+        context = {
+            'users': users,
+            'courses': courses,
+            'assignments': assignments,
+        }
+        return render(request, 'user_all.html', context)
+
+    def post(self, request):
+        pass
 
 class MyInfoView(View):
     def get(self, request):

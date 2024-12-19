@@ -59,18 +59,6 @@ class UserManagementTests(TestCase):
         self.assertFalse(result['success'])
         self.assertIn('username is required', result['message'])
 
-    def test_create_user_invalid_role(self):
-        entry = {
-            'username': 'user_with_invalid_role',
-            'role': 'INVALID_ROLE',
-            'email': 'user@example.com',
-            'phone_number': '1234567890',
-            'address': '456 Role Street',
-            'password': 'password123'
-        }
-        result = self.user_management.create(entry)
-        self.assertFalse(result['success'])
-        self.assertIn('Invalid role specified', result['message'])
 
     def test_update_user(self):
 

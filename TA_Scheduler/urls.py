@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from scheduler.views import  UserManagementView, LoginView, Dashboard, CourseManagement,CourseEditView
+from scheduler.views import UserManagementView, LoginView, Dashboard, CourseManagement, CourseEditView, userAll
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,6 +25,8 @@ urlpatterns = [
     #path('login', Create.as_view(), name='login'),
     path('', LoginView.as_view(), name='login'),
     path('courses/', CourseManagement.as_view(), name='course_management'),
-    path('coursemanagement/<int:pk>/', CourseEditView.as_view(), name='edit_course'),
+    path('courses/<int:course_id>/', CourseEditView.as_view(), name='edit_course'),
+
+path('userall/', userAll.as_view(), name='user_all'),
 
 ]
