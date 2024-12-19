@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Users, Courses, and Assignments</title>
+    <title>All Users</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,6 +18,14 @@
             font-size: 2rem;
             color: #444;
         }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
         .section {
             margin: 20px auto;
             width: 90%;
@@ -26,38 +34,72 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px 15px;
+
+        .block {
+            background-color: #fff;
             border: 1px solid #ddd;
-            text-align: left;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            padding: 15px;
+            box-sizing: border-box;
         }
-        th {
-            background-color: #007BFF;
-            color: white;
-            text-transform: uppercase;
+
+        .block h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .info {
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info:last-child {
+            border-bottom: none;
+        }
+
+        .info label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 3px;
             font-size: 14px;
         }
-        tr {
-            transition: background-color 0.2s ease;
-        }
-        tr:hover {
-            background-color: #f1f1f1;
-        }
-        td {
-            font-size: 14px;
+
+        .info span {
             color: #555;
+            font-size: 13px;
         }
+
+        .sections {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #ddd;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .no-assignments {
+            font-size: 14px;
+            color: #999;
+            text-align: center;
+        }
+
         .empty-message {
             text-align: center;
             padding: 20px;
             font-size: 16px;
             color: #777;
         }
+
         .no-data {
             text-align: center;
             color: #999;
@@ -70,90 +112,50 @@
     <!-- Users Section -->
     <div class="section">
         <h1>All Users</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>User ID</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Role</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                <tr>
-                    <td>{{ user.user_id }}</td>
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.phone_number }}</td>
-                    <td>{{ user.role }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="no-data">No users found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="container">
+            {% for user in users %}
+            <div class="block">
+                <h2>{{ user.username }}</h2>
+                <div class="info">
+                    <label>Role:</label>
+                    <span>{{ user.role }}</span>
+                </div>
+                <div class="info">
+                    <label>Phone Number:</label>
+                    <span>{{ user.phone_number }}</span>
+                </div>
+                <div class="info">
+                    <label>Email:</label>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="info">
+                    <label>Address:</label>
+                    <span>{{ user.address }}</span>
+                </div>
 
-    <!-- Courses Section -->
-    <div class="section">
-        <h1>All Courses</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Course ID</th>
-                    <th>Course Name</th>
-                    <th>Instructor</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for course in courses %}
-                <tr>
-                    <td>{{ course.course_id }}</td>
-                    <td>{{ course.course_name }}</td>
-                    <td>{{ course.instructor }}</td>
-                    <td>{{ course.description }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="no-data">No courses found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Assignments Section -->
-    <div class="section">
-        <h1>All Assignments</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Assignment ID</th>
-                    <th>User</th>
-                    <th>Course</th>
-                    <th>Lab</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for assignment in assignments %}
-                <tr>
-                    <td>{{ assignment.assignment_id }}</td>
-                    <td>{{ assignment.user.username }}</td>
-                    <td>{{ assignment.course.course_name }}</td>
-                    <td>{{ assignment.lab.section_number }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="no-data">No assignments found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <!-- Sections (Assignments) Section -->
+                <div class="sections">
+                    <div class="section-title">Sections</div>
+                    {% with user.assignments.all as user_assignments %}
+                    {% if user_assignments %}
+                    <ul>
+                        {% for assignment in user_assignments %}
+                        <li>
+                            <strong>Course:</strong> {{ assignment.course.course_name }} <br>
+                            <strong>Lab Section:</strong> {{ assignment.lab.section_number }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="no-assignments">No assignments for this user.</div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="no-data">No users found.</div>
+            {% endfor %}
+        </div>
     </div>
 </body>
 </html>
