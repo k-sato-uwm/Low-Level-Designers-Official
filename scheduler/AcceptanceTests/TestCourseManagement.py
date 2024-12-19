@@ -1,6 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from scheduler.models import Course, User
+from scheduler.models import Course, User, Assignments
 from django.contrib.messages import get_messages
 class CourseManagementTests(TestCase):
     def setUp(self):
@@ -12,15 +12,17 @@ class CourseManagementTests(TestCase):
         self.course = Course.objects.create(
             course_code="CS101",
             course_name="Intro to Computer Science",
-            instructor=self.instructor
+            # instructor=self.instructor
         )
+
+        self.assignment = Assignments.objects.create(user=self.instructor, course=self.course)
 
     def test_get_request(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'CourseManagement.html')
         self.assertIn('courses', response.context)
-        self.assertIn('instructors', response.context)
+        self.assertIn('users', response.context)
 
     def test_post_add_course_success(self):
         data = {
@@ -80,15 +82,16 @@ class CourseManagementTests(TestCase):
         self.assertEqual(str(messages[0]), "Failed to delete course. Course may not exist.")
 
     def test_post_edit_course_success(self):
+        newuser=User.objects.create(username='user2')
         data = {
             'edit_course': '',
             'course_id': self.course.course_id,
-            'instructor_name': 'test_instructor'
+            'user_names': ['test_instructor']
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)  # Redirect
-        updated_course = Course.objects.get(course_id=self.course.course_id)
-        self.assertEqual(updated_course.instructor.username, 'test_instructor')
+        updated_assignment = Assignments.objects.get(course=self.course, user=self.instructor)
+        self.assertEqual(updated_assignment.user.username, 'test_instructor')
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(str(messages[0]), "Course updated successfully.")
 
@@ -96,7 +99,7 @@ class CourseManagementTests(TestCase):
         data = {
             'edit_course': '',
             'course_id': 999,  # Nonexistent course ID
-            'instructor_name': 'test_instructor'
+            'user_names': ['test_instructor']
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)  # Redirect
@@ -107,7 +110,7 @@ class CourseManagementTests(TestCase):
         data = {
             'edit_course': '',
             'course_id': self.course.course_id,
-            'instructor_name': ''  # Missing instructor name
+            'user_names': []  # Missing instructor name
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)  # Redirect
@@ -155,7 +158,7 @@ class CourseManagementTests(TestCase):
         data = {
             'edit_course': '',
             'course_id': 999,  # Nonexistent course ID
-            'instructor_name': 'test_instructor'
+            'user_names': ['test_instructor']
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)  # Redirect
@@ -168,7 +171,7 @@ class CourseManagementTests(TestCase):
         data_edit = {
             'edit_course': '',
             'course_id': self.course.course_id,
-            'instructor_name': 'test_instructor'
+            'user_names': ['test_instructor']
         }
         data_delete = {
             'delete_course': '',
@@ -190,7 +193,7 @@ class CourseManagementTests(TestCase):
         data = {
             'edit_course': '',
             'course_id': self.course.course_id,
-            'instructor_name': 'nonexistent_instructor'
+            'user_names': ['nonexistent_instructor']
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)  # Redirect
