@@ -153,25 +153,18 @@ class Dashboard(View):
 class UserManagementView(View):
 
     def get(self, request):
+        users = User.objects.all()
+        return render(request, 'user_management.html', {'users': users})
+
+
+    def post(self, request):
         instructors = User.objects.filter(role='Instructor')
         supervisors = User.objects.filter(role='Supervisor')
         tas = User.objects.filter(role='TA')
 
-        return render(request, 'user_management.html', {
-            'instructors': instructors,
-            'supervisors': supervisors,
-            'tas': tas,
-        })
-
-    def post(self, request):
-
-        #action to keep track if user clicks add, edit, or delete
         action = request.POST.get('action')
-
         # creates an instance of userManagement and assigns it to user_manager
         user_manager = UserManagement()
-
-        role = request.POST.get('role')
 
         if action == 'add':
 
@@ -217,10 +210,12 @@ class UserManagementView(View):
         # this renders the result
         # if result['success'] is true then the success message will display, else it will do nothing
         # if result['success'] is false then the error message will display, else it will do nothing
+
+        users = User.objects.all()
         return render(request, 'user_management.html', {
-            'success': result['message'] if result['success'] else None,
-            'error': result['message'] if not result['success'] else None,
-            'role': role,
+            'users': users,
+            'success': result['message'] if result ['success'] else None,
+            'error': result['message'] if not result ['success'] else None,
         })
 class CourseEditView(View):
     pass
