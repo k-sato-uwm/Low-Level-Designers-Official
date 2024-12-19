@@ -12,12 +12,24 @@ class CourseManagement(View):
 
     def get(self, request):
         # get all courses and instructors
-        courses = Course.objects.all().only('course_code', 'course_name', 'instructor_id')
-        instructors = User.objects.filter(role='Instructor').only('username', 'user_id')
+        ids = Course.objects.values('course_id')
+        courses = []
+
+        for entry in ids: # Getting all the courses
+            courses.append(CourseManager.view(entry['course_id']))
+
+        for course in courses: # Isolating the instructor (first instructor found is listed as "main" instructor
+            users = course['users']
+            for user in users:
+                if user.role == 'Instructor':
+                    course['instructor'] = user
+                    break
+
+        users = User.objects.values()
 
         context = {
             'courses': courses,
-            'instructors': instructors
+            'users': users
         }
 
         return render(request, self.template_name, context)
@@ -59,13 +71,13 @@ class CourseManagement(View):
         # edit course
         if 'edit_course' in request.POST:
             course_id = request.POST.get('course_id')
-            instructor_name = request.POST.get('instructor_name')
+            user_names = request.POST.getlist('user_names')
 
-            if not course_id or not instructor_name:
+            if not course_id or not user_names:
                 messages.error(request, "Course ID and Instructor name are required to update.")
                 return redirect('course_management')
 
-            entry = {'instructor_name': instructor_name}
+            entry = {'user_names': user_names}
             success = CourseManager.update(course_id, entry)
             if success:
                 messages.success(request, "Course updated successfully.")
@@ -141,25 +153,18 @@ class Dashboard(View):
 class UserManagementView(View):
 
     def get(self, request):
+        users = User.objects.all()
+        return render(request, 'user_management.html', {'users': users})
+
+
+    def post(self, request):
         instructors = User.objects.filter(role='Instructor')
         supervisors = User.objects.filter(role='Supervisor')
         tas = User.objects.filter(role='TA')
 
-        return render(request, 'user_management.html', {
-            'instructors': instructors,
-            'supervisors': supervisors,
-            'tas': tas,
-        })
-
-    def post(self, request):
-
-        #action to keep track if user clicks add, edit, or delete
         action = request.POST.get('action')
-
         # creates an instance of userManagement and assigns it to user_manager
         user_manager = UserManagement()
-
-        role = request.POST.get('role')
 
         if action == 'add':
 
@@ -205,8 +210,11 @@ class UserManagementView(View):
         # this renders the result
         # if result['success'] is true then the success message will display, else it will do nothing
         # if result['success'] is false then the error message will display, else it will do nothing
+
+        users = User.objects.all()
         return render(request, 'user_management.html', {
-            'success': result['message'] if result['success'] else None,
-            'error': result['message'] if not result['success'] else None,
-            'role': role,
+            'users': users,
+            'success': result['message'] if result ['success'] else None,
+            'error': result['message'] if not result ['success'] else None,
         })
+

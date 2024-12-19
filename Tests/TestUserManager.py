@@ -16,6 +16,7 @@ class UserManagementTests(TestCase):
             password="testpassword"
         )
 
+
     def test_create_user_success(self):
 
         entry = {
@@ -45,6 +46,31 @@ class UserManagementTests(TestCase):
         self.assertFalse(result['success'])
         self.assertEqual(result['message'], 'User already exists!')
 
+    def test_create_user_missing_fields(self):
+        entry = {
+            'username': '',
+            'role': User.TEACHING_ASSISTANT,
+            'email': '',
+            'phone_number': '',
+            'address': '',
+            'password': ''
+        }
+        result = self.user_management.create(entry)
+        self.assertFalse(result['success'])
+        self.assertIn('username is required', result['message'])
+
+    def test_create_user_invalid_role(self):
+        entry = {
+            'username': 'user_with_invalid_role',
+            'role': 'INVALID_ROLE',
+            'email': 'user@example.com',
+            'phone_number': '1234567890',
+            'address': '456 Role Street',
+            'password': 'password123'
+        }
+        result = self.user_management.create(entry)
+        self.assertFalse(result['success'])
+        self.assertIn('Invalid role specified', result['message'])
 
     def test_update_user(self):
 
