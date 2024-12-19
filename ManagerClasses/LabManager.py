@@ -1,4 +1,4 @@
-from scheduler.models import Lab
+from scheduler.models import Lab, User, Assignments
 from ManagerClasses.ManagerABC import AbstractManager
 class LabManager(AbstractManager):
     def create(self, data, msg=None):
@@ -18,6 +18,12 @@ class LabManager(AbstractManager):
                 return False
 
             Lab.objects.create(lab_id=lab_id, section_number=section_number)
+            if data.get('ta_name'):
+                instructor = User.objects.get(username=data.get('instructor_name'))
+                Assignments.objects.create(
+                    user = instructor,
+                    lab = Lab.objects.get(lab_id=lab_id),
+                )
             return True
         except Exception:
             return False

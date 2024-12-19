@@ -1,6 +1,209 @@
-<h1>Edit Course</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }} <!-- Automatically renders form fields -->
-    <button type="submit">Save</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        h2, h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form, table {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        button {
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        table th {
+            background-color: #f4f4f4;
+        }
+        .error {
+            color: red;
+            margin-bottom: 20px;
+        }
+        .success {
+            color: green;
+            margin-bottom: 20px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            width: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .modal-close {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Edit Course</h2>
+
+    <!-- Error Message Display -->
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <!-- Success Message Display -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="success">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Edit Course Form -->
+    <form action="{% url 'edit_course' course.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="save_course" value="true">
+        <label for="course_code">Course Code</label>
+        <input type="text" id="course_code" name="course_code" value="{{ course.course_code }}" required>
+
+        <label for="course_name">Course Name</label>
+        <input type="text" id="course_name" name="course_name" value="{{ course.course_name }}" required>
+
+        <label for="instructor_id">Instructor</label>
+        <input list="instructors_list" id="instructor_id" name="instructor_id" value="{{ course.instructor_id }}" required>
+        <datalist id="instructors_list">
+            {% for user in instructors %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </datalist>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <!-- Lab Section Management -->
+    <h3>Lab Sections</h3>
+
+    <!-- List Lab Sections -->
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Lab Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lab in labs %}
+            <tr>
+                <td>{{ lab.pk }}</td>
+                <td>{{ lab.section_number }}</td>
+                <td>
+                    <!-- Edit Button (Opens Modal) -->
+                    <button type="button" onclick="openModal('{{ lab.pk }}', '{{ lab.section_number }}')">Edit</button>
+
+                    <!-- Delete Form -->
+                    <form action="{% url 'edit_course' course.pk %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_lab" value="{{ lab.pk }}">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Add Lab Section Form -->
+    <h3>Add Lab Section</h3>
+    <form action="{% url 'edit_course' course.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="add_lab" value="true">
+        <label for="lab_name">Lab Name</label>
+        <input type="text" id="lab_name" name="lab_name" required>
+
+        <label for="ta_id">Teaching Assistant</label>
+        <input list="ta_list" id="ta_id" name="ta_id" required>
+        <datalist id="ta_list">
+            {% for ta in assistants %}
+                <option value="{{ ta.user_id }}">{{ ta.username }}</option>
+            {% endfor %}
+        </datalist>
+
+        <button type="submit">Add Lab Section</button>
+    </form>
+
+    <!-- Modal for Editing Lab Section -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h3>Edit Lab Section</h3>
+            <form action="{% url 'edit_course' course.pk %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="edit_lab" value="true">
+                <input type="hidden" id="modal_lab_id" name="lab_id">
+                <label for="modal_lab_name">Lab Name</label>
+                <input type="text" id="modal_lab_name" name="lab_name" required>
+
+                <label for="modal_ta_id">Teaching Assistant</label>
+                <input list="modal_ta_list" id="modal_ta_id" name="ta_id" required>
+                <datalist id="modal_ta_list">
+                    {% for ta in assistants %}
+                        <option value="{{ ta.user_id }}">{{ ta.username }}</option>
+                    {% endfor %}
+                </datalist>
+
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(labId, labName) {
+        const modal = document.getElementById('editModal');
+        modal.style.display = 'block';
+        document.getElementById('modal_lab_id').value = labId;
+        document.getElementById('modal_lab_name').value = labName;
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('editModal');
+        modal.style.display = 'none';
+    }
+</script>
+</body>
+</html>
