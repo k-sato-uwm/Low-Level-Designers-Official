@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from sqlparse.sql import Assignment
+
 from ManagerClasses.CourseManager import CourseManager
 from ManagerClasses.LoginManager import LoginManager
-from scheduler.models import User, Course
+from scheduler.models import User, Course, Assignments
 from ManagerClasses.userManager import UserManagement
 from django.contrib import messages
 
@@ -158,9 +160,6 @@ class UserManagementView(View):
 
 
     def post(self, request):
-        instructors = User.objects.filter(role='Instructor')
-        supervisors = User.objects.filter(role='Supervisor')
-        tas = User.objects.filter(role='TA')
 
         action = request.POST.get('action')
         # creates an instance of userManagement and assigns it to user_manager
@@ -226,6 +225,7 @@ from .models import Course, Lab, User, Assignments
 
 
 class CourseEditView(View):
+
     template_name = "edit_course.html"
 
     def get(self, request, course_id):
@@ -311,5 +311,21 @@ class CourseEditView(View):
 
         # Redirect to refresh the page
         return redirect("edit_course", course_id=course_id)
+
+class userAll(View):
+    def get(self, request):
+        users = User.objects.all()
+        courses = Course.objects.all()
+        assignments = Assignments.objects.all()
+        context = {
+            'users': users,
+            'courses': courses,
+            'assignments': assignments,
+        }
+        return render(request, 'user_all.html', context)
+
+    def post(self, request):
+        pass
+
 
 
