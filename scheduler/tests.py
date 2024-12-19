@@ -505,3 +505,18 @@ class CourseSpecificAcceptanceTests(TestCase):
         nonexistent_url = reverse('course_page', args=[99999])
         response = self.client.get(nonexistent_url)
         self.assertEqual(response.status_code, 404)
+
+    def test_assign_ta_to_lab(self):
+        """Test assigning a TA to a lab."""
+        new_ta = User.objects.create(username="new_ta", role="Teaching Assistant")
+        data = {
+            'lab_id': self.lab.lab_id,
+            'ta_username': new_ta.username
+        }
+        response = self.client.post(reverse('assign_ta_to_lab'), data)
+        self.assertEqual(response.status_code, 302)  # Redirect after successful assignment
+
+        # Confirm TA assignment
+        assignment = Assignments.objects.get(lab_id=self.lab, user_id=new_ta)
+        self.assertIsNotNone(assignment)
+
