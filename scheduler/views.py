@@ -4,7 +4,7 @@ from sqlparse.sql import Assignment
 
 from ManagerClasses.CourseManager import CourseManager
 from ManagerClasses.LoginManager import LoginManager
-from scheduler.models import User, Course, Assignments
+from scheduler.models import User, Course, Assignments, Lab
 from ManagerClasses.userManager import UserManagement
 from django.contrib import messages
 
@@ -13,19 +13,15 @@ class CourseManagement(View):
     template_name = 'CourseManagement.html'
 
     def get(self, request):
-        # get all courses and instructors
+        # Get all courses and instructors
         ids = Course.objects.values('course_id')
         courses = []
 
-        for entry in ids: # Getting all the courses
-            courses.append(CourseManager.view(entry['course_id']))
-
-        for course in courses: # Isolating the instructor (first instructor found is listed as "main" instructor
-            users = course['users']
-            for user in users:
-                if user.role == 'Instructor':
-                    course['instructor'] = user
-                    break
+        for entry in ids:  # Getting all the courses
+            course = CourseManager.view(entry['course_id'])
+            labs = Lab.objects.filter(course=course['course_id'])  # Fetch labs for the course
+            course['labs'] = labs
+            courses.append(course)
 
         users = User.objects.values()
 
@@ -37,7 +33,7 @@ class CourseManagement(View):
         return render(request, self.template_name, context)
 
     def post(self, request):
-        # add course
+        # Add course
         if 'add_course' in request.POST:
             entry = {
                 'course_code': request.POST.get('course_code'),
@@ -56,7 +52,7 @@ class CourseManagement(View):
                 messages.error(request, "Failed to add course. It may already exist, or the instructor was not found.")
             return redirect('course_management')
 
-        # delete course
+        # Delete course
         if 'delete_course' in request.POST:
             course_id = request.POST.get('course_id')
             if not course_id:
@@ -70,7 +66,7 @@ class CourseManagement(View):
                 messages.error(request, "Failed to delete course. Course may not exist.")
             return redirect('course_management')
 
-        # edit course
+        # Edit course (Assign instructor)
         if 'edit_course' in request.POST:
             course_id = request.POST.get('course_id')
             user_names = request.POST.getlist('user_names')
@@ -85,6 +81,29 @@ class CourseManagement(View):
                 messages.success(request, "Course updated successfully.")
             else:
                 messages.error(request, "Failed to update course. Instructor or course may not exist.")
+            return redirect('course_management')
+
+        # Assign Lab (Create a new lab)
+        if 'assign_lab' in request.POST:
+            course_id = request.POST.get('course_id')
+            lab_section = request.POST.get('lab_section')
+            lab_instructor_username = request.POST.get('lab_instructor')
+
+            if not course_id or not lab_section or not lab_instructor_username:
+                messages.error(request, "All fields are required to assign a lab.")
+                return redirect('course_management')
+
+            # Get the course object
+            course = Course.objects.get(course_id=course_id)
+
+            # Get the lab instructor user object
+            lab_instructor = User.objects.get(username=lab_instructor_username)
+
+            # Create the lab and save it
+            lab = Lab(course=course, section_number=lab_section)
+            lab.save()
+
+            messages.success(request, "Lab assigned successfully.")
             return redirect('course_management')
 
         # Default redirect for unrecognized POST actions
@@ -233,5 +252,45 @@ class userAll(View):
 
     def post(self, request):
         pass
+
+class MyInfo(View):
+    template_name = 'MyInfo.html'
+
+    def get(self, request):
+        # Fetch user details from the session
+        username = request.session.get('username')
+        user = User.objects.get(username=username)
+
+        # Pass the user data to the template for display
+        context = {
+            'username': user,
+            'phoneNumber': user.phone_number,
+            'email': user.email,
+            'address': user.address,
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        # Fetch user details from the session
+        username = request.session.get('username')
+        user = User.objects.get(username=username)
+
+        # Pass the user data to the template for display
+
+        user_manager = UserManagement()
+        user_id = request.POST.get('id')
+        result = user_manager.update(user_id, request.POST)
+        if result['success']:
+            messages.success(request, result['message'])
+            print("WE GOT HERE")
+
+        context = {
+            'username': user,
+            'phoneNumber': user.phone_number,
+            'email': user.email,
+            'address': user.address,
+        }
+
+        return render(request, 'MyInfo.html', context)
 
 
