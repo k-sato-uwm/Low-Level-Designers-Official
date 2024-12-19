@@ -450,3 +450,75 @@ class UserManagementAcceptanceTests(TestCase):
         self.assertEqual(response.status_code, 200)
         messages = list(get_messages(response.wsgi_request))
         self.assertIn('Invalid action specified.', str(messages[0]))
+
+class CourseSpecificAcceptanceTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('course_page')
+
+        # Create test instructor and course
+        self.instructor = User.objects.create(username="test_instructor", role="Instructor")
+        self.ta = User.objects.create(username="test_ta", role="Teaching Assistant")
+        self.course = Course.objects.create(
+            course_id="12345",
+            course_code="CS101",
+            course_name="Intro to Computer Science",
+            instructor=self.instructor,
+            ta=self.ta
+        )
+    def test_get_request(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'CoursePage.html')
+        self.assertIn('courses', response.context)
+        self.assertIn('instructors', response.context)
+        self.assertIn('ta', response.context)
+
+    def test_edit_course_instructor(self):
+        new_instructor = User.objects.create(username="new_instructor", role="Instructor")
+        data = {
+            'course_id': self.course.course_id,
+            'instructor_name': new_instructor.username
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)  # Redirect after successful update
+        self.course.refresh_from_db()
+        self.assertEqual(self.course.instructor, new_instructor)  # Confirm update worked
+
+    def test_edit_course_with_invalid_instructor(self):
+        data = {
+            'course_id': self.course.course_id,
+            'instructor_name': 'non_existent_user'
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.course.refresh_from_db()
+        self.assertEqual(self.course.instructor, self.instructor)  # Instructor remains unchanged
+        messages = list(get_messages(response.wsgi_request))
+        self.assertIn("Instructor does not exist.", str(messages[0]))
+
+    def test_delete_course(self):
+        response = self.client.post(reverse('course_delete', args=[self.course.course_id]))
+        self.assertEqual(response.status_code, 302)  # Redirect after delete
+        with self.assertRaises(Course.DoesNotExist):
+            Course.objects.get(course_id=self.course.course_id)  # Confirm deletion
+
+    def test_access_nonexistent_course(self):
+        nonexistent_url = reverse('course_page', args=[99999])
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_assign_ta_to_lab(self):
+        """Test assigning a TA to a lab."""
+        new_ta = User.objects.create(username="new_ta", role="Teaching Assistant")
+        data = {
+            'lab_id': self.lab.lab_id,
+            'ta_username': new_ta.username
+        }
+        response = self.client.post(reverse('assign_ta_to_lab'), data)
+        self.assertEqual(response.status_code, 302)  # Redirect after successful assignment
+
+        # Confirm TA assignment
+        assignment = Assignments.objects.get(lab_id=self.lab, user_id=new_ta)
+        self.assertIsNotNone(assignment)
+
