@@ -103,18 +103,6 @@
             flex-direction: column;
             gap: 10px;
         }
-
-        /* Additional styles for Labs */
-        #labList {
-            margin-top: 20px;
-        }
-
-        .lab-item {
-            background-color: #e0e0e0;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 4px;
-        }
     </style>
 </head>
 <body>
@@ -127,7 +115,7 @@
     <div class="popup" id="coursePopup">
         <div class="popup-content">
             <h2>Enter Course Name</h2>
-            <form action="/courses/" method="POST"> <!-- Action should send POST form data to Python code -->
+            <form action="/courses/" method="POST" > <!-- Action should send POST form data to python code -->
                 {% csrf_token %}
 
                 <label for="courseName">Course Name:</label>
@@ -149,36 +137,27 @@
     <div class="popup" id="editPopup">
         <div class="popup-content">
             <h3>Edit Course</h3>
-            <form action="/courses/" method="POST">
+            <form action="/courses/" method="POST"  > <!-- Form to assign instructor -->
                 {% csrf_token %}
-                <label for="instructor">Assign Instructor:</label>
+                <label for="instructor">Assign User:</label>
                 <select name="user_names" id="instructor" required>
                     <option value="">Select Instructor</option>
+
                     {% for user in users %}
                         <option value="{{ user.username }}">{{ user.username }}</option>
                     {% endfor %}
-                </select>
 
-                <input type="hidden" name="course_id" id="course_id">
+                </select>
+                <!-- To change not only instructor <label for="courseName">Course Name:</label>
+                <input type="text" name="course_name" id="courseName" placeholder="Enter course name" required>
+
+                <label for="courseCode">Course Code:</label>
+                <input type="text" name="course_code" id="courseCode" placeholder="Enter course code" required> -->
+
+                <input type="hidden" name="course_id" id="course_id" >
                 <button type="submit" name="edit_course">Assign User</button>
                 <button type="button" class="close-btn" onclick="closeEditPopup()">Close</button>
             </form>
-
-            <!-- Labs Section -->
-            <h4>Labs</h4>
-            <div id="labList"></div> <!-- List of assigned labs will appear here -->
-
-            <!-- Lab creation form -->
-            <div>
-                <input type="text" id="labSection" placeholder="Enter Lab Section">
-                <select id="labInstructor" required>
-                    <option value="">Select Instructor</option>
-                    {% for user in users %}
-                        <option value="{{ user.username }}">{{ user.username }}</option>
-                    {% endfor %}
-                </select>
-                <button type="button" onclick="createLab()">Assign Lab</button>
-            </div>
         </div>
     </div>
 
@@ -193,7 +172,9 @@
 
             <div class="button-container">
                 <!-- Edit Button -->
-                <button class="edit-btn" onclick="openEditPopup({{ course.course_id }})">Edit</button>
+                <!-- IMPORTANT: ADD COURSE.ID INSIDE OF openEditPopup PARENTHESIS -->
+                <!--<button class="edit-btn" onclick="openEditPopup({{ course.course_id }})">Edit</button> -->
+                <a class="edit-btn" href="/courses/{{ course.course_id }}">Edit</a>
                 <!-- Delete Button -->
                 <form action="/courses/" method="POST">
                     {% csrf_token %}
@@ -203,7 +184,8 @@
             </div>
         </div>
     {% endfor %}
-    </div>
+</div>
+
 
     <script>
         // Show the popup when the "Add New Course" button is clicked
@@ -230,25 +212,6 @@
         function closeEditPopup() {
             const editPopup = document.getElementById('editPopup');
             editPopup.style.display = 'none';
-        }
-
-        // Function to create a new lab
-        function createLab() {
-            const labSection = document.getElementById('labSection').value;
-            const labInstructor = document.getElementById('labInstructor').value;
-            if (labSection && labInstructor) {
-                const labList = document.getElementById('labList');
-                const labDiv = document.createElement('div');
-                labDiv.className = 'lab-item';
-                labDiv.innerHTML = `<strong>Section:</strong> ${labSection} <br><strong>Instructor:</strong> ${labInstructor}`;
-                labList.appendChild(labDiv);
-
-                // Clear the input fields
-                document.getElementById('labSection').value = '';
-                document.getElementById('labInstructor').value = '';
-            } else {
-                alert('Please fill in both fields.');
-            }
         }
     </script>
 </body>
