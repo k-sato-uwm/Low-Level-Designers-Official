@@ -217,5 +217,40 @@ class UserManagementView(View):
             'success': result['message'] if result ['success'] else None,
             'error': result['message'] if not result ['success'] else None,
         })
+
 class CourseEditView(View):
     pass
+
+class MyInfoView(View):
+    def get(self, request):
+        try:
+            mgr = UserManagement()
+
+            user = mgr.view(request.session['username'])
+
+            return render(request, 'MyInfo.html', {'user':user})
+        except ValueError:
+            return redirect('/')
+        except Exception as e:
+            print(f'Ran into error {e}')
+            return redirect('/dashboard/')
+
+    def post(self, request):
+        try:
+            mgr = UserManagement()
+            entry = {}
+            if 'email' in request.POST:
+                newmail = request.POST.get('email')
+                entry['email'] = newmail
+            if 'phone_number' in request.POST:
+                newphone = request.POST.get('phone_number')
+                entry['phone_number'] = newphone
+
+            user = mgr.view(request.session['username'])
+            res = mgr.update(user.user_id, entry)
+
+            if res:
+                return render(request, 'MyInfo.html', request.session['username'])
+        except Exception as e:
+            print(f'Ran into error {e}')
+            return redirect('/dashboard/')

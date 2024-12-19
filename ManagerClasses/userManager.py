@@ -1,7 +1,6 @@
 from django.db import IntegrityError
 from scheduler.models import User
 
-
 class UserManagement:
     def create(self, entry):
         try:
@@ -48,6 +47,15 @@ class UserManagement:
             return {'success': False, 'message': 'User already exists!'}
         except Exception as e:
             return {'success': False, 'message': f'Error occurred: {str(e)}'}
+
+    def view(self, username):
+        try:
+            user = User.objects.get(username=username)
+
+            return user
+        except User.DoesNotExist:
+            print(f'User w/ username {username} does not exist!')
+            return None
 
     def update(self, user_id, entry):
         try:
