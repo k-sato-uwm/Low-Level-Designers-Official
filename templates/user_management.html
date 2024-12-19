@@ -172,7 +172,7 @@
             <h3>Teaching Assistants</h3>
             <ul>
                 {% for user in users %}
-                    {% if user.role == 'TA' %}
+                    {% if user.role == 'Teaching Assistant' %}
                         <li>
                             <span class="username">{{ user.username }}</span>
                             <span class="user-id">ID: {{ user.user_id }}</span>
