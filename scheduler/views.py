@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from sqlparse.sql import Assignment
-
 from ManagerClasses.CourseManager import CourseManager
 from ManagerClasses.LoginManager import LoginManager
 from scheduler.models import User, Course, Assignments
@@ -160,6 +159,9 @@ class UserManagementView(View):
 
 
     def post(self, request):
+        instructors = User.objects.filter(role='Instructor')
+        supervisors = User.objects.filter(role='Supervisor')
+        tas = User.objects.filter(role='TA')
 
         action = request.POST.get('action')
         # creates an instance of userManagement and assigns it to user_manager
@@ -216,6 +218,7 @@ class UserManagementView(View):
             'success': result['message'] if result ['success'] else None,
             'error': result['message'] if not result ['success'] else None,
         })
+
 
 
 from django.shortcuts import render, get_object_or_404, redirect
@@ -327,5 +330,36 @@ class userAll(View):
     def post(self, request):
         pass
 
+class MyInfoView(View):
+    def get(self, request):
+        try:
+            mgr = UserManagement()
 
+            user = mgr.view(request.session['username'])
 
+            return render(request, 'MyInfo.html', {'user':user})
+        except ValueError:
+            return redirect('/')
+        except Exception as e:
+            print(f'Ran into error {e}')
+            return redirect('/dashboard/')
+
+    def post(self, request):
+        try:
+            mgr = UserManagement()
+            entry = {}
+            if 'email' in request.POST:
+                newmail = request.POST.get('email')
+                entry['email'] = newmail
+            if 'phone_number' in request.POST:
+                newphone = request.POST.get('phone_number')
+                entry['phone_number'] = newphone
+
+            user = mgr.view(request.session['username'])
+            res = mgr.update(user.user_id, entry)
+
+            if res:
+                return render(request, 'MyInfo.html', request.session['username'])
+        except Exception as e:
+            print(f'Ran into error {e}')
+            return redirect('/dashboard/')
