@@ -345,12 +345,14 @@ class UserManagementAcceptanceTests(TestCase):
         )
 
     def test_get_user_management_page(self):
+        # Test that the GET request returns the correct template and status code
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'user_management.html')
-        self.assertIn('instructors', response.context)
-        self.assertIn('supervisors', response.context)
-        self.assertIn('tas', response.context)
+
+        # Test that the context includes users
+        self.assertIn('users', response.context)
+        self.assertTrue(len(response.context['users']) > 0)
 
     def test_create_user_success(self):
         data = {
