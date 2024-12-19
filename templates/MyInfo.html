@@ -80,13 +80,13 @@
         <!-- Left Section: Personal Details -->
         <div class="profile-section" id="personal-details">
             <h2>Personal Details</h2>
-            <form action="/profile/" method="POST">
+            <form action="/myinfo/" method="POST">
                 {% csrf_token %}
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" value={{ username }} disabled>
 
                 <label for="phone">Phone Number:</label>
-                <input type="text" id="phone" name="phone" value={{ phoneNumber }} disabled>
+                <input type="text" id="phone" name="phone" value={{ phone_number }} disabled>
 
                 <label for="email">Email:</label>
                 <input type="email" id="email" name="email" value={{ email }} disabled>
@@ -100,17 +100,17 @@
         </div>
 
         <!-- Right Section: Change Password -->
-        <div class="profile-section" id="password-section">
-            <h2>Change Password</h2>
-            <form action="/profile/" method="POST">
-                {% csrf_token %}
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" value="password123" disabled>
-
-                <button type="button" class="change-btn" onclick="changePassword()">Change Password</button>
-                <button type="submit" class="change-btn" style="display:none;" id="password-confirm-btn">Confirm</button>
-            </form>
-        </div>
+{#        <div class="profile-section" id="password-section">#}
+{#            <h2>Change Password</h2>#}
+{#            <form action="/myinfo/" method="POST">#}
+{#                {% csrf_token %}#}
+{#                <label for="password">Password:</label>#}
+{#                <input type="password" id="password" name="password" value="password123" disabled>#}
+{##}
+{#                <button type="button" class="change-btn" onclick="changePassword()">Change Password</button>#}
+{#                <button type="submit" class="change-btn" style="display:none;" id="password-confirm-btn">Confirm</button>#}
+{#            </form>#}
+{#        </div>#}
     </div>
 
     <script>
