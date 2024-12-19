@@ -217,4 +217,5 @@ class UserManagementView(View):
             'success': result['message'] if result ['success'] else None,
             'error': result['message'] if not result ['success'] else None,
         })
-
+class CourseEditView(View):
+    pass
