@@ -1,5 +1,4 @@
 from django.db import IntegrityError
-
 from scheduler.models import User
 
 

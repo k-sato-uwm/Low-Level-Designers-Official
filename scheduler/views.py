@@ -12,12 +12,24 @@ class CourseManagement(View):
 
     def get(self, request):
         # get all courses and instructors
-        courses = Course.objects.all().only('course_code', 'course_name', 'instructor_id')
-        instructors = User.objects.filter(role='Instructor').only('username', 'user_id')
+        ids = Course.objects.values('course_id')
+        courses = []
+
+        for entry in ids: # Getting all the courses
+            courses.append(CourseManager.view(entry['course_id']))
+
+        for course in courses: # Isolating the instructor (first instructor found is listed as "main" instructor
+            users = course['users']
+            for user in users:
+                if user.role == 'Instructor':
+                    course['instructor'] = user
+                    break
+
+        users = User.objects.values()
 
         context = {
             'courses': courses,
-            'instructors': instructors
+            'users': users
         }
 
         return render(request, self.template_name, context)
@@ -59,13 +71,13 @@ class CourseManagement(View):
         # edit course
         if 'edit_course' in request.POST:
             course_id = request.POST.get('course_id')
-            instructor_name = request.POST.get('instructor_name')
+            user_names = request.POST.getlist('user_names')
 
-            if not course_id or not instructor_name:
+            if not course_id or not user_names:
                 messages.error(request, "Course ID and Instructor name are required to update.")
                 return redirect('course_management')
 
-            entry = {'instructor_name': instructor_name}
+            entry = {'user_names': user_names}
             success = CourseManager.update(course_id, entry)
             if success:
                 messages.success(request, "Course updated successfully.")

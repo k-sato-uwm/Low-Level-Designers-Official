@@ -133,18 +133,18 @@
         </div>
     </div>
 
-    <!-- Edit Popup for Instructor Assignment -->
+    <!-- Edit Popup for User Assignment -->
     <div class="popup" id="editPopup">
         <div class="popup-content">
             <h3>Edit Course</h3>
             <form action="/courses/" method="POST"  > <!-- Form to assign instructor -->
                 {% csrf_token %}
-                <label for="instructor">Assign Instructor:</label>
-                <select name="instructor_name" id="instructor" required>
+                <label for="instructor">Assign User:</label>
+                <select name="user_names" id="instructor" required>
                     <option value="">Select Instructor</option>
                     <!-- Assuming instructors list is dynamically populated by Flask -->
-                    {% for instructor in instructors %}
-                        <option value="{{ instructor.username }}">{{ instructor.username }}</option>
+                    {% for user in users %}
+                        <option value="{{ user.username }}">{{ user.username }}</option>
                     {% endfor %}
 
                 </select>
@@ -155,7 +155,7 @@
                 <input type="text" name="course_code" id="courseCode" placeholder="Enter course code" required> -->
 
                 <input type="hidden" name="course_id" id="course_id" >
-                <button type="submit" name="edit_course">Assign Instructor</button>
+                <button type="submit" name="edit_course">Assign User</button>
                 <button type="button" class="close-btn" onclick="closeEditPopup()">Close</button>
             </form>
         </div>
