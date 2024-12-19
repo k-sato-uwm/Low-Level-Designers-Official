@@ -40,7 +40,8 @@ class MyInfoTests(TestCase):
         self.assertEqual(self.client.session['role'], 'Teaching Assistant')
         res = self.client.post(self.url, {'email':'new.mail@gmail.com'})
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.context['user'].email, 'new.mail@gmail.com', msg='Email not updated!')
+        user = User.objects.get(username=self.client.session['username'])
+        self.assertEqual(user.email, 'new.mail@gmail.com', msg='Email not updated!')
 
     def test_myInfoEditPhone(self):
         self.client.post('/', {'username': 'test_me', 'password': 'pass123'}, follow=True)
@@ -48,7 +49,8 @@ class MyInfoTests(TestCase):
         self.assertEqual(self.client.session['role'], 'Teaching Assistant')
         res = self.client.post(self.url, {'phone_number':'1234567890'})
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.context['user'].phone_number, '1234567890', msg='Number not updated!')
+        user = User.objects.get(username=self.client.session['username'])
+        self.assertEqual(user.phone_number, '1234567890', msg='Number not updated!')
 
     def test_myInfoEditBoth(self):
         self.client.post('/', {'username': 'test_me', 'password': 'pass123'}, follow=True)
@@ -56,5 +58,6 @@ class MyInfoTests(TestCase):
         self.assertEqual(self.client.session['role'], 'Teaching Assistant')
         res = self.client.post(self.url, {'email':'new.mail@gmail.com', 'phone_number':'1234567890'})
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res.context['user'].email, 'new.mail@gmail.com', msg='Email not updated!')
-        self.assertEqual(res.context['user'].phone_number, '1234567890', msg='Number not updated!')
+        user = User.objects.get(username=self.client.session['username'])
+        self.assertEqual(user.email, 'new.mail@gmail.com', msg='Email not updated!')
+        self.assertEqual(user.phone_number, '1234567890', msg='Number not updated!')

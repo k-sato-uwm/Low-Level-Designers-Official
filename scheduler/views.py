@@ -307,8 +307,8 @@ class CourseEditView(View):
             lab = get_object_or_404(Lab, pk=lab_id, course=course)
             lab.delete()
 
-            # Remove associated assignments
-            Assignments.objects.filter(course=course, lab=lab).delete()
+            # Remove associated assignments - Deleted automatically by cascade in Models.py
+            # Assignments.objects.filter(course=course, lab=lab).delete()
 
             messages.success(request, "Lab section and associated assignments deleted successfully!")
 
@@ -337,7 +337,12 @@ class MyInfoView(View):
 
             user = mgr.view(request.session['username'])
 
-            return render(request, 'MyInfo.html', {'user':user})
+            return render(request, 'MyInfo.html', {'username':user.username,
+                                                                        'phone_number':user.phone_number,
+                                                                        'email':user.email,
+                                                                        'address':user.address
+                                                                       }
+            )
         except ValueError:
             return redirect('/')
         except Exception as e:
@@ -348,18 +353,26 @@ class MyInfoView(View):
         try:
             mgr = UserManagement()
             entry = {}
+            print(request.POST)
             if 'email' in request.POST:
                 newmail = request.POST.get('email')
                 entry['email'] = newmail
-            if 'phone_number' in request.POST:
-                newphone = request.POST.get('phone_number')
+
+            if 'phone' in request.POST:
+                newphone = request.POST.get('phone')
                 entry['phone_number'] = newphone
+
+            print(entry)
 
             user = mgr.view(request.session['username'])
             res = mgr.update(user.user_id, entry)
 
             if res:
-                return render(request, 'MyInfo.html', request.session['username'])
+                return render(request, 'MyInfo.html', {'username':user.username,
+                                                                        'phone_number':user.phone_number,
+                                                                        'email':user.email,
+                                                                        'address':user.address
+                                                                       })
         except Exception as e:
             print(f'Ran into error {e}')
             return redirect('/dashboard/')
