@@ -1,0 +1,6 @@
+<h1>Edit Course</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }} <!-- Automatically renders form fields -->
+    <button type="submit">Save</button>
+</form>

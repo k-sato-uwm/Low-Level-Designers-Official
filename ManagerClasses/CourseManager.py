@@ -1,5 +1,5 @@
 from scheduler.models import *
-from ManagerABC import AbstractManager
+from ManagerClasses.ManagerABC import AbstractManager
 class CourseManager(AbstractManager):
     @staticmethod
     def create(entry: dict) -> bool:
