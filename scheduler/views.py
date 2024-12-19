@@ -234,8 +234,8 @@ class CourseEditView(View):
         labs = Lab.objects.filter(course=course)
 
         # Fetch instructors and teaching assistants
-        instructors = User.objects.filter(role=User.INSTRUCTOR)  # Adjusted to match role choices
-        assistants = User.objects.filter(role=User.TEACHING_ASSISTANT)  # Adjusted to match role choices
+        instructors = User.objects.filter(role=User.INSTRUCTOR)
+        assistants = User.objects.filter(role=User.TEACHING_ASSISTANT)
 
         # Pass data to the template
         context = {

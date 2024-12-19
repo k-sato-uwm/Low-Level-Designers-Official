@@ -142,7 +142,7 @@
                 <label for="instructor">Assign User:</label>
                 <select name="user_names" id="instructor" required>
                     <option value="">Select Instructor</option>
-                    <!-- Assuming instructors list is dynamically populated by Flask -->
+
                     {% for user in users %}
                         <option value="{{ user.username }}">{{ user.username }}</option>
                     {% endfor %}
@@ -173,7 +173,8 @@
             <div class="button-container">
                 <!-- Edit Button -->
                 <!-- IMPORTANT: ADD COURSE.ID INSIDE OF openEditPopup PARENTHESIS -->
-                <button class="edit-btn" onclick="openEditPopup({{ course.course_id }})">Edit</button>
+                <!--<button class="edit-btn" onclick="openEditPopup({{ course.course_id }})">Edit</button> -->
+                <a class="edit-btn" href="/courses/{{ course.course_id }}">Edit</a>
                 <!-- Delete Button -->
                 <form action="/courses/" method="POST">
                     {% csrf_token %}
